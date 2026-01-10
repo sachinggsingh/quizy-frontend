@@ -1,0 +1,36 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+
+export function DashboardHeader() {
+  return (
+    <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
+            <span className="text-lg font-bold text-primary-foreground">Q</span>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-bold text-foreground">QuizMaster</h1>
+            <p className="text-xs text-muted-foreground">Test your knowledge</p>
+          </div>
+        </div>
+
+        <nav className="hidden md:flex items-center gap-6">
+          <Link href="/dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+            Dashboard
+          </Link>
+          <Link href="/leaderboard" className="text-foreground hover:text-primary font-medium transition-colors">
+            Leaderboard
+          </Link>
+          <Link href="/profile" className="text-foreground hover:text-primary font-medium transition-colors">
+            Profile
+          </Link>
+        </nav>
+
+        <Button variant="outline" className="border-border/50 bg-transparent">
+          Sign Out
+        </Button>
+      </div>
+    </header>
+  )
+}
