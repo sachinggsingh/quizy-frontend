@@ -5,46 +5,48 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { registerUser, clearError } from "@/lib/features/auth/authSlice"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function SignUpForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" })
-  const [error, setError] = useState("")
+  const dispatch = useAppDispatch()
+  const { isLoading, error } = useAppSelector((state) => state.auth)
+  const [formData, setFormData] = useState({ name: "", email: "", password: "",  })
+  const [formError, setFormError] = useState("")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    if (error) dispatch(clearError())
+    if (formError) setFormError("")
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError("")
+    setFormError("")
 
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError("All fields are required")
-      return
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match")
+    if (!formData.name || !formData.email || !formData.password ) {
+      setFormError("All fields are required")
       return
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long")
+      setFormError("Password must be at least 8 characters long")
       return
     }
 
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      // In a real app, you would redirect to dashboard here
-      console.log("Sign up:", formData)
-    }, 1000)
+    const result = await dispatch(registerUser({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password
+    }))
+
+    if (registerUser.fulfilled.match(result)) {
+      window.location.href = "/sign-in"
+    }
   }
 
   return (
@@ -55,7 +57,7 @@ export function SignUpForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
+          {(error || formError) && <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error || formError}</div>}
 
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
@@ -98,7 +100,7 @@ export function SignUpForm() {
             />
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
               id="confirmPassword"
@@ -110,7 +112,7 @@ export function SignUpForm() {
               disabled={isLoading}
               className="bg-input border-border/50"
             />
-          </div>
+          </div> */}
 
           <Button
             type="submit"

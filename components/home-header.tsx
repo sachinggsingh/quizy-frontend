@@ -1,7 +1,63 @@
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { logoutUser } from "@/lib/features/auth/authSlice"
 
 export function HomeHeader() {
+  const [mounted, setMounted] = useState(false)
+  const dispatch = useAppDispatch()
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const handleLogout = () => {
+    dispatch(logoutUser())
+    window.location.href = "/"
+  }
+
+  // Prevent hydration mismatch by returning a consistent initial render
+  const renderAuthButtons = () => {
+    if (!mounted) {
+      return (
+        <>
+          <Button asChild variant="outline" className="border-border/50 bg-transparent hidden sm:flex">
+            <Link href="/sign-in">Sign In</Link>
+          </Button>
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Link href="/sign-up">Get Started</Link>
+          </Button>
+        </>
+      )
+    }
+
+    if (isAuthenticated) {
+      return (
+        <>
+          <Button variant="ghost" className="hidden sm:flex" onClick={handleLogout}>
+            <span>Log Out</span>
+          </Button>
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Link href="/dashboard">Dashboard</Link>
+          </Button>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <Button asChild variant="outline" className="border-border/50 bg-transparent hidden sm:flex">
+          <Link href="/sign-in">Sign In</Link>
+        </Button>
+        <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Link href="/sign-up">Get Started</Link>
+        </Button>
+      </>
+    )
+  }
+
   return (
     <header className="border-b border-border/50 bg-card/30 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -28,12 +84,7 @@ export function HomeHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" className="border-border/50 bg-transparent hidden sm:flex">
-            <Link href="/sign-in">Sign In</Link>
-          </Button>
-          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Link href="/sign-up">Get Started</Link>
-          </Button>
+          {renderAuthButtons()}
         </div>
       </div>
     </header>

@@ -5,36 +5,39 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { loginUser, clearError } from "@/lib/features/auth/authSlice"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function SignInForm() {
-  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useAppDispatch()
+  const { isLoading, error } = useAppSelector((state) => state.auth)
   const [formData, setFormData] = useState({ email: "", password: "" })
-  const [error, setError] = useState("")
+  const [formError, setFormError] = useState("")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    if (error) dispatch(clearError())
+    if (formError) setFormError("")
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError("")
+    setFormError("")
 
     if (!formData.email || !formData.password) {
-      setError("Email and password are required")
+      setFormError("Email and password are required")
       return
     }
 
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      // In a real app, you would redirect to dashboard here
-      console.log("Sign in:", formData)
-    }, 1000)
+    const result = await dispatch(loginUser(formData))
+    
+    if (loginUser.fulfilled.match(result)) {
+      window.location.href = "/"
+    }
   }
 
   return (
@@ -45,7 +48,7 @@ export function SignInForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
+          {(error || formError) && <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error || formError}</div>}
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

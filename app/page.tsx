@@ -1,12 +1,21 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useAppSelector } from "@/lib/hooks"
 import { HomeHeader } from "@/components/home-header"
 import { FeatureCard } from "@/components/feature-card"
 import { Trophy, Zap, Users, BookOpen, BarChart3, Target } from "lucide-react"
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-card/20 to-background">
       <HomeHeader />
@@ -26,9 +35,15 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
-              <Link href="/sign-up">Start Taking Quizzes</Link>
-            </Button>
+            {mounted && isAuthenticated ? (
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
+                <Link href="/dashboard">Go to Dashboard</Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
+                <Link href="/sign-up">Start Taking Quizzes</Link>
+              </Button>
+            )}
             <Button asChild variant="outline" size="lg" className="border-border/50 bg-transparent px-8 h-12">
               <Link href="/leaderboard">View Leaderboard</Link>
             </Button>
