@@ -6,15 +6,23 @@ import { StatsCard } from "@/components/stats-card"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { fetchQuizzes } from "@/lib/features/quiz/quizSlice"
 import { fetchProfile } from "@/lib/features/auth/authSlice"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { LoaderThree, LoaderFive } from "@/components/ui/loader"
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch()
   const { quizzes, isLoading, error } = useAppSelector((state) => state.quiz)
+  const [showMinLoader, setShowMinLoader] = useState(true)
 
   useEffect(() => {
     dispatch(fetchQuizzes())
     dispatch(fetchProfile())
+    
+    const timer = setTimeout(() => {
+      setShowMinLoader(false)
+    }, 1500)
+    
+    return () => clearTimeout(timer)
   }, [dispatch])
 
   // Use real user data if available in redux, otherwise 0/default
@@ -22,6 +30,8 @@ export default function DashboardPage() {
   const completedQuizzes = user?.completedQuizzes || 0 
   const averageScore = user?.averageScore || 0
   const rank = user?.rank || "-"
+
+  const effectivelyLoading = isLoading || showMinLoader
 
   return (
     <div className="min-h-screen bg-background">
@@ -47,8 +57,11 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">Choose a quiz to test your knowledge</p>
           </div>
 
-          {isLoading ? (
-            <div className="text-center py-10 text-muted-foreground animate-pulse">Loading quizzes...</div>
+          {effectivelyLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <LoaderThree />
+              <LoaderFive text="Fetching Quizzes..." />
+            </div>
           ) : error ? (
              <div className="text-destructive text-center py-10 bg-destructive/10 rounded-lg border border-destructive/20">{error}</div>
           ) : quizzes.length === 0 ? (

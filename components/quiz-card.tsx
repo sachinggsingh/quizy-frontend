@@ -38,14 +38,9 @@ export function QuizCard({ id, title, description, difficulty, questions, comple
         </div>
 
         {completed ? (
-          <div className="flex gap-2">
-            <Button asChild className="flex-1 bg-primary/70 hover:bg-primary text-primary-foreground">
-              <Link href={`/quiz/${id}`}>Retake</Link>
-            </Button>
-            <Button asChild variant="outline" className="flex-1 border-border/50 bg-transparent">
-              <Link href={`/results/${id}`}>View Results</Link>
-            </Button>
-          </div>
+          <Button asChild className="w-full bg-primary/70 hover:bg-primary text-primary-foreground">
+            <Link href={`/quiz/${id}`}>Retake Quiz</Link>
+          </Button>
         ) : (
           <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
             <Link href={`/quiz/${id}`}>Start Quiz</Link>

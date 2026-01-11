@@ -59,7 +59,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                   {user?.name || "Loading..."}
                 </h2>
                 <p className="text-sm text-muted-foreground">{user?.email || "..."}</p>
-                <p className="text-xs text-muted-foreground mt-1">Member since January 2024</p>
+                <p className="text-xs text-muted-foreground mt-1">{user?.createdAt || "..."}</p>
               </div>
             </div>
 
