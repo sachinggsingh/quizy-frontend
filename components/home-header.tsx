@@ -81,6 +81,11 @@ export function HomeHeader() {
           <Link href="#testimonials" className="text-foreground hover:text-primary font-medium transition-colors">
             Testimonials
           </Link>
+          {mounted && isAuthenticated && (
+            <Link href="/leaderboard" className="text-foreground hover:text-primary font-medium transition-colors">
+              Leaderboard
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">

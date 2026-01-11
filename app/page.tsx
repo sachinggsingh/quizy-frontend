@@ -44,9 +44,11 @@ export default function HomePage() {
                 <Link href="/sign-up">Start Taking Quizzes</Link>
               </Button>
             )}
-            <Button asChild variant="outline" size="lg" className="border-border/50 bg-transparent px-8 h-12">
-              <Link href="/leaderboard">View Leaderboard</Link>
-            </Button>
+            {mounted && isAuthenticated && (
+              <Button asChild variant="outline" size="lg" className="border-border/50 bg-transparent px-8 h-12">
+                <Link href="/leaderboard">View Leaderboard</Link>
+              </Button>
+            )}
           </div>
 
           {/* Hero Stats */}

@@ -6,13 +6,26 @@ import { LeaderboardTable } from "@/components/leaderboard-table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAppSelector } from "@/lib/hooks"
+import { useRouter } from "next/navigation"
 
 type Timeframe = "weekly" | "monthly" | "all-time"
 
 export default function LeaderboardPage() {
   const [timeframe, setTimeframe] = useState<Timeframe>("all-time")
   const [leaderboardData, setLeaderboardData] = useState<any[]>([])
-  const { user: currentUser } = useAppSelector((state) => state.auth)
+  const { user: currentUser, isAuthenticated } = useAppSelector((state) => state.auth)
+  const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push("/sign-in")
+    }
+  }, [mounted, isAuthenticated, router])
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8080/ws/leaderboard")
@@ -45,6 +58,10 @@ export default function LeaderboardPage() {
   const userStats = leaderboardData.find(u => u.isCurrentUser) || {
     rank: currentUser?.rank || "-",
     score: currentUser?.score || 0
+  }
+
+  if (!mounted || !isAuthenticated) {
+    return null
   }
 
   return (
