@@ -1,21 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useAppSelector } from "@/lib/hooks"
 import { HomeHeader } from "@/components/home-header"
 import { FeatureCard } from "@/components/feature-card"
+import { PricingCard } from "@/components/pricing-card" // Import PricingCard component
 import { Trophy, Zap, Users, BookOpen, BarChart3, Target } from "lucide-react"
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false)
-  const { isAuthenticated } = useAppSelector((state) => state.auth)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-card/20 to-background">
       <HomeHeader />
@@ -35,20 +27,12 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            {mounted && isAuthenticated ? (
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
-                <Link href="/dashboard">Go to Dashboard</Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
-                <Link href="/sign-up">Start Taking Quizzes</Link>
-              </Button>
-            )}
-            {mounted && isAuthenticated && (
-              <Button asChild variant="outline" size="lg" className="border-border/50 bg-transparent px-8 h-12">
-                <Link href="/leaderboard">View Leaderboard</Link>
-              </Button>
-            )}
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
+              <Link href="/sign-up">Start Taking Quizzes</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-border/50 bg-transparent px-8 h-12">
+              <Link href="/leaderboard">View Leaderboard</Link>
+            </Button>
           </div>
 
           {/* Hero Stats */}
@@ -204,6 +188,63 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="space-y-12">
+          <div className="text-center space-y-4">
+            <h3 className="text-4xl md:text-5xl font-bold text-foreground">Simple, Transparent Pricing</h3>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Choose the perfect plan for your learning needs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <PricingCard
+              name="Basic"
+              price="0"
+              description="Perfect for getting started"
+              features={[
+                "10 quizzes per month",
+                "Basic analytics",
+                "Access to public leaderboard",
+                "Community support",
+                "Standard quiz categories",
+              ]}
+            />
+            <PricingCard
+              name="Pro"
+              price="9.99"
+              description="For serious learners"
+              isPopular={true}
+              isAnnual={true}
+              features={[
+                "Unlimited quizzes",
+                "Advanced analytics",
+                "Priority leaderboard ranking",
+                "Email support",
+                "All quiz categories",
+                "Custom quiz creation",
+                "Progress reports",
+              ]}
+            />
+            <PricingCard
+              name="Enterprise"
+              price="29.99"
+              description="For organizations"
+              features={[
+                "Everything in Pro",
+                "Team collaboration",
+                "Custom branding",
+                "API access",
+                "Dedicated support",
+                "Advanced reporting",
+                "Single sign-on (SSO)",
+              ]}
+            />
           </div>
         </div>
       </section>
