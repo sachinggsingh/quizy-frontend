@@ -10,7 +10,7 @@ interface StatsCardProps {
 
 export function StatsCard({ label, value, subtext, icon }: StatsCardProps) {
   return (
-    <Card className="border-primary/20 bg-card/50">
+    <Card className="border-border bg-card shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
         {icon && <div className="text-primary">{icon}</div>}

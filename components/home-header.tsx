@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { logoutUser } from "@/lib/features/auth/authSlice"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function HomeHeader() {
   const [mounted, setMounted] = useState(false)
@@ -23,7 +24,7 @@ export function HomeHeader() {
     if (!mounted) {
       return (
         <>
-          <Button asChild variant="outline" className="border-border/50 bg-transparent hidden sm:flex">
+          <Button asChild variant="outline" className="hidden sm:flex">
             <Link href="/sign-in">Sign In</Link>
           </Button>
           <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -48,7 +49,7 @@ export function HomeHeader() {
 
     return (
       <>
-        <Button asChild variant="outline" className="border-border/50 bg-transparent hidden sm:flex">
+        <Button asChild variant="outline" className="hidden sm:flex">
           <Link href="/sign-in">Sign In</Link>
         </Button>
         <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -59,7 +60,7 @@ export function HomeHeader() {
   }
 
   return (
-    <header className="border-b border-border/50 bg-card/80 backdrop-blur-md sticky top-0 z-50">
+    <header className="border-b border-border/50 bg-background/80 backdrop-blur-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent">
@@ -89,6 +90,7 @@ export function HomeHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ModeToggle />
           {renderAuthButtons()}
         </div>
       </div>

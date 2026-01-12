@@ -33,7 +33,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       {/* Animated gradient background */}
       <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-primary/30 via-accent/20 to-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl group"></div>
 
-      <Card className="relative border-primary/20 bg-gradient-to-br from-card/80 to-card/40 overflow-hidden">
+      <Card className="relative border-border bg-card shadow-lg overflow-hidden group">
         {/* Animated gradient overlay on hover */}
         <div
           className={`absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 transition-opacity duration-500 ${
@@ -49,7 +49,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               {/* Profile Avatar with animated border */}
               <div className="relative">
                 <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary to-accent opacity-75 animate-spin-slow"></div>
-                <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl font-bold text-primary-foreground">
+                <div className="relative w-20 h-20 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-primary-foreground shadow-inner">
                   {getInitials(user?.name)}
                 </div>
               </div>
@@ -59,23 +59,25 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                   {user?.name || "Loading..."}
                 </h2>
                 <p className="text-sm text-muted-foreground">{user?.email || "..."}</p>
-                <p className="text-xs text-muted-foreground mt-1">{user?.createdAt || "..."}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "..."}
+                </p>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
-                className="border-border/50 bg-transparent hover:bg-primary/10 transition-all duration-300"
+                className="hover:bg-primary/10 transition-all duration-300"
               >
                 <Edit2 className="w-4 h-4 mr-2" />
                 Edit Profile
-              </Button>
+              </Button> */}
               <Button
                 variant="outline"
                 size="sm"
-                className="border-destructive/50 bg-transparent hover:bg-destructive/10 text-destructive transition-all duration-300"
+                className=" text-destructive transition-all duration-300"
                 onClick={handleLogout}
               >
                 <LogOut className="w-4 h-4 mr-2" />

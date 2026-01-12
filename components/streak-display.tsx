@@ -27,7 +27,13 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
     for (let i = 364; i >= 0; i--) {
       const date = new Date(today)
       date.setDate(date.getDate() - i)
-      const dateStr = date.toISOString().split("T")[0]
+      
+      // Format as YYYY-MM-DD in local time
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const dateStr = `${year}-${month}-${day}`
+      
       const count = (user.activity && user.activity[dateStr]) || 0
       
       allDays.push({
@@ -66,7 +72,7 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-          <div className="relative bg-card border border-primary/20 rounded-lg p-4 hover:border-primary/40 transition-colors">
+          <div className="relative bg-card border border-border rounded-lg p-4 hover:border-primary/40 transition-colors shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Current Streak</p>
@@ -82,7 +88,7 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
 
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-          <div className="relative bg-card border border-primary/20 rounded-lg p-4 hover:border-primary/40 transition-colors">
+          <div className="relative bg-card border border-border rounded-lg p-4 hover:border-primary/40 transition-colors shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Longest Streak</p>
@@ -98,7 +104,7 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
 
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-          <div className="relative bg-card border border-primary/20 rounded-lg p-4 hover:border-primary/40 transition-colors">
+          <div className="relative bg-card border border-border rounded-lg p-4 hover:border-primary/40 transition-colors shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total Completed</p>
@@ -114,11 +120,11 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
       </div>
 
       {/* GitHub Style Contribution Graph - Exact Replica */}
-      <div className="bg-card border border-primary/20 rounded-lg p-6 hover:border-primary/40 transition-colors">
+      <div className="bg-card border border-border rounded-lg p-6 hover:border-primary/40 transition-colors shadow-md">
         <h3 className="text-sm font-semibold mb-4 text-foreground">Your activity</h3>
 
         <div className="overflow-x-auto no-scrollbar pb-4">
-          <div className="inline-flex gap-1.5">
+          <div className="inline-flex gap-1">
             {streakWeeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
                 {week.map((day, dayIndex) => {

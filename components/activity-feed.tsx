@@ -11,40 +11,38 @@ interface ActivityItem {
   date: string
 }
 
-export function ActivityFeed() {
-  const activities: ActivityItem[] = [
-    {
-      id: "1",
-      type: "completed",
-      quiz: "Advanced JavaScript",
-      score: 92,
-      date: "2 hours ago",
-    },
-    {
-      id: "2",
-      type: "completed",
-      quiz: "React Hooks Deep Dive",
-      score: 85,
-      date: "1 day ago",
-    },
-    {
-      id: "3",
-      type: "failed",
-      quiz: "TypeScript Generics",
-      score: 65,
-      date: "2 days ago",
-    },
-    {
-      id: "4",
-      type: "completed",
-      quiz: "CSS Grid Master",
-      score: 95,
-      date: "3 days ago",
-    },
-  ]
+interface ActivityFeedProps {
+  activities?: any[]
+}
+
+export function ActivityFeed({ activities = [] }: ActivityFeedProps) {
+  // If no activities, could show a placeholder or nothing
+  if (activities.length === 0) {
+    return (
+      <Card className="border-border bg-card shadow-md">
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-4">No recent activity found.</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Helper to format date relative (simplified)
+  const formatRelativeDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diff = now.getTime() - date.getTime()
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    if (days === 0) return "Today"
+    if (days === 1) return "Yesterday"
+    return `${days} days ago`
+  }
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-card/80 to-card/40">
+    <Card className="border-border bg-card shadow-md">
       <CardHeader>
         <CardTitle className="text-lg">Recent Activity</CardTitle>
       </CardHeader>
@@ -59,10 +57,10 @@ export function ActivityFeed() {
               )}
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">{activity.quiz}</p>
-              <p className="text-xs text-muted-foreground">{activity.date}</p>
+              <p className="text-sm font-medium text-foreground">{activity.quizTitle}</p>
+              <p className="text-xs text-muted-foreground">{formatRelativeDate(activity.date)}</p>
             </div>
-            {activity.score && (
+            {activity.score !== undefined && (
               <div className="text-right">
                 <p className="text-sm font-bold text-primary">{activity.score}%</p>
               </div>

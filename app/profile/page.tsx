@@ -24,11 +24,17 @@ export default function ProfilePage() {
       title: "First Steps",
       description: "Complete your first quiz",
       icon: "🎯",
-      achieved: true,
-      unlockedDate: "Jan 5",
+      achieved: (user?.completedQuizzes || 0) > 0,
+      unlockedDate: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "Jan 5",
     },
-    { title: "Perfect Score", description: "Score 100% on a quiz", icon: "💯", achieved: true, unlockedDate: "Jan 12" },
-    { title: "Quiz Master", description: "Complete 25 quizzes", icon: "🏆", achieved: false },
+    { 
+      title: "Perfect Score", 
+      description: "Score 100% on a quiz", 
+      icon: "💯", 
+      achieved: (user?.averageScore || 0) === 100, 
+      unlockedDate: user?.updatedAt ? new Date(user.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "Jan 12" 
+    },
+    { title: "Quiz Master", description: "Complete 25 quizzes", icon: "🏆", achieved: (user?.completedQuizzes || 0) >= 25 },
     {
       title: "Speedrunner",
       description: "Complete a quiz in under 5 min",
@@ -36,9 +42,33 @@ export default function ProfilePage() {
       achieved: true,
       unlockedDate: "Jan 18",
     },
-    { title: "Consistency", description: "Maintain 30-day streak", icon: "📈", achieved: false },
-    { title: "Top 10", description: "Reach top 10 leaderboard", icon: "👑", achieved: false },
+    { title: "Consistency", description: "Maintain 30-day streak", icon: "📈", achieved: (user?.streak || 0) >= 30 },
+    { title: "Top 10", description: "Reach top 10 leaderboard", icon: "👑", achieved: (user?.rank || 0) <= 10 && user?.rank > 0 },
   ]
+
+  // Create real activity feed data from user profile
+  const getDisplayActivities = () => {
+    if (!user) return []
+
+    // 1. Start with the explicit activity log if available
+    const log = user.activityLog || []
+    
+    // 2. If log is empty but we have completed quizzes, add generic entries for them
+    // This handles historical data provided in the user's DB snapshot
+    if (log.length === 0 && user.completedQuizIds?.length > 0) {
+      return user.completedQuizIds.map((id: string, index: number) => ({
+        id: `hist-${id}-${index}`,
+        type: "completed",
+        quizTitle: "Quiz Completed",
+        score: user.averageScore, // Use average score as a fallback
+        date: user.updatedAt || user.createdAt || new Date().toISOString()
+      }))
+    }
+
+    return log
+  }
+
+  const displayActivities = getDisplayActivities()
 
   if (isLoading && !user) {
     return (
@@ -91,12 +121,12 @@ export default function ProfilePage() {
 
           {/* Activity Feed Sidebar */}
           <div className="lg:col-span-1">
-            <ActivityFeed />
+            <ActivityFeed activities={displayActivities} />
           </div>
         </div>
 
         {/* Preferences Section */}
-        <section className="mt-8">
+        {/* <section className="mt-8">
           <Card className="border-primary/20 bg-gradient-to-br from-card/80 to-card/40">
             <CardHeader>
               <CardTitle>Preferences</CardTitle>
@@ -116,7 +146,7 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
-        </section>
+        </section> */}
       </main>
     </div>
   )
