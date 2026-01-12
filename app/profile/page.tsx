@@ -9,6 +9,7 @@ import { ActivityFeed } from "@/components/activity-feed"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { fetchProfile } from "@/lib/features/auth/authSlice"
+import { StreakDisplay } from "@/components/streak-display"
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch()
@@ -66,6 +67,11 @@ export default function ProfilePage() {
         {/* Stats Grid */}
         <section className="mb-8">
           <ProfileStats user={user} />
+        </section>
+
+        {/* Streak Display */}
+        <section className="mb-8">
+          <StreakDisplay user={user} />
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
