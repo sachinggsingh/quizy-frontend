@@ -2,20 +2,32 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { registerUser, clearError } from "@/lib/features/auth/authSlice"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
 
 export function SignUpForm() {
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const { isLoading, error } = useAppSelector((state) => state.auth)
   const [formData, setFormData] = useState({ name: "", email: "", password: "",  })
   const [formError, setFormError] = useState("")
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError())
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, dispatch])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -29,12 +41,24 @@ export function SignUpForm() {
     setFormError("")
 
     if (!formData.name || !formData.email || !formData.password ) {
-      setFormError("All fields are required")
+      const msg = "All fields are required"
+      setFormError(msg)
+      toast.error(msg)
+      setTimeout(() => setFormError(""), 3000)
+      setTimeout(() => {
+        setFormData({ name: "", email: "", password: "" })
+      }, 1000)
       return
     }
 
     if (formData.password.length < 8) {
-      setFormError("Password must be at least 8 characters long")
+      const msg = "Password must be at least 8 characters long"
+      setFormError(msg)
+      toast.error(msg)
+      setTimeout(() => setFormError(""), 3000)
+      setTimeout(() => {
+        setFormData({ name: "", email: "", password: "" })
+      }, 1000)
       return
     }
 
@@ -45,9 +69,21 @@ export function SignUpForm() {
     }))
 
     if (registerUser.fulfilled.match(result)) {
-      window.location.href = "/sign-in"
+      toast.success("Account created successfully! Redirecting...")
+      setTimeout(() => {
+        router.push("/sign-in")
+      }, 1500)
+    } else if (registerUser.rejected.match(result)) {
+      const errorMessage = (result.payload as string) || "Registration failed"
+      toast.error(errorMessage)
+      setTimeout(() => {
+        setFormData({ name: "", email: "", password: "" })
+      }, 1000)
     }
+
   }
+
+
 
   return (
     <Card className="border-primary/20 shadow-lg">
@@ -100,20 +136,6 @@ export function SignUpForm() {
             />
           </div>
 
-          {/* <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              disabled={isLoading}
-              className="bg-input border-border/50"
-            />
-          </div> */}
-
           <Button
             type="submit"
             disabled={isLoading}
@@ -133,3 +155,4 @@ export function SignUpForm() {
     </Card>
   )
 }
+

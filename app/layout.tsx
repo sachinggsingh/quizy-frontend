@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import StoreProvider from "@/components/providers"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "sonner"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -41,12 +42,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
         <StoreProvider>
-          <ThemeProvider
+          < ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
-            disableTransitionOnChange
+            // disableTransitionOnChange
           >
+            <Toaster position="bottom-right" />
             {children}
             <Analytics />
           </ThemeProvider>
@@ -55,3 +57,4 @@ export default function RootLayout({
     </html>
   )
 }
+

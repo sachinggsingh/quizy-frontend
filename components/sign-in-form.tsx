@@ -2,20 +2,33 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { loginUser, clearError } from "@/lib/features/auth/authSlice"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
 
 export function SignInForm() {
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const { isLoading, error } = useAppSelector((state) => state.auth)
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [formError, setFormError] = useState("")
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError())
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, dispatch])
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -29,15 +42,32 @@ export function SignInForm() {
     setFormError("")
 
     if (!formData.email || !formData.password) {
-      setFormError("Email and password are required")
+      const msg = "Invalid credentials"
+      setFormError(msg)
+      toast.error(msg)
+      setTimeout(() => setFormError(""), 3000)
+      setTimeout(() => {
+        setFormData({ email: "", password: "" })
+      }, 1000)
       return
     }
 
     const result = await dispatch(loginUser(formData))
     
     if (loginUser.fulfilled.match(result)) {
-      window.location.href = "/"
+      toast.success("Signed in successfully!")
+      setTimeout(() => {
+        router.push("/")
+      }, 1500)
+    } else if (loginUser.rejected.match(result)) {
+      toast.error("Invalid credentials")
+      setTimeout(() => {
+        setFormData({ email: "", password: "" })
+      }, 1000)
     }
+
+
+
   }
 
   return (
@@ -103,3 +133,4 @@ export function SignInForm() {
     </Card>
   )
 }
+
