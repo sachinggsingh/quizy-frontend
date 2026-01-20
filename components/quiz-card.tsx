@@ -6,17 +6,23 @@ interface QuizCardProps {
   id: string
   title: string
   description: string
-  difficulty: "Easy" | "Medium" | "Hard"
+  difficulty: "Easy" | "Medium" | "Hard" | string
   questions: number
   completed: boolean
   score?: number
 }
 
+const difficultyMap: Record<string, { label: string; color: string }> = {
+  easy: { label: "Easy", color: "bg-green-500/20 text-green-700 dark:text-green-400" },
+  medium: { label: "Medium", color: "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400" },
+  hard: { label: "Hard", color: "bg-red-500/20 text-red-700 dark:text-red-400" },
+}
+
 export function QuizCard({ id, title, description, difficulty, questions, completed, score }: QuizCardProps) {
-  const difficultyColor = {
-    Easy: "bg-green-500/20 text-green-700 dark:text-green-400",
-    Medium: "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400",
-    Hard: "bg-red-500/20 text-red-700 dark:text-red-400",
+  const normDifficulty = difficulty.toLowerCase()
+  const display = difficultyMap[normDifficulty] || { 
+    label: difficulty, 
+    color: "bg-blue-500/20 text-blue-700 dark:text-blue-400" 
   }
 
   return (
@@ -24,8 +30,8 @@ export function QuizCard({ id, title, description, difficulty, questions, comple
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2 mb-2">
           <CardTitle className="text-lg group-hover:text-primary transition-colors">{title}</CardTitle>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${difficultyColor[difficulty]}`}>
-            {difficulty}
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${display.color}`}>
+            {display.label}
           </span>
         </div>
         <CardDescription className="text-sm">{description}</CardDescription>

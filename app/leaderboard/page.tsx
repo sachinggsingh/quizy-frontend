@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAppSelector } from "@/lib/hooks"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 type Timeframe = "weekly" | "monthly" | "all-time"
 
@@ -117,8 +118,8 @@ export default function LeaderboardPage() {
               variant={timeframe === tf ? "default" : "outline"}
               className={
                 timeframe === tf
-                  ? "bg-primary text-primary-foreground"
-                  : "border-border/50 bg-transparent hover:bg-accent/5"
+                  ? "bg-primary text-white"
+                  : "border-border/50 bg-transparent bg-accent/9"
               }
             >
               {tf === "weekly" ? "This Week" : tf === "monthly" ? "This Month" : "All Time"}
@@ -134,7 +135,9 @@ export default function LeaderboardPage() {
           <p className="text-muted-foreground mb-4">
             Keep grinding to climb the leaderboard and unlock exclusive rewards!
           </p>
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Take a Quiz to Earn Points</Button>
+          <Button className="bg-primary text-white transition-all duration-300">
+          <Link href="/dashboard">Take a Quiz to Earn Points</Link>
+          </Button>
         </div>
       </main>
     </div>

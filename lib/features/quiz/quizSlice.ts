@@ -12,7 +12,7 @@ export interface Quiz {
     id: string
     title: string
     description?: string
-    difficulty?: "Easy" | "Medium" | "Hard"
+    difficulty?: "Easy" | "Medium" | "Hard" | string
     questions: Question[]
     points: number
     completed?: boolean

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { LoaderThree } from "@/components/ui/loader"
 
 export function SignInForm() {
   const router = useRouter()
@@ -19,6 +20,7 @@ export function SignInForm() {
   const { isLoading, error } = useAppSelector((state) => state.auth)
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [formError, setFormError] = useState("")
+  const [isSuccess, setIsSuccess] = useState(false)
 
   useEffect(() => {
     if (error) {
@@ -56,6 +58,7 @@ export function SignInForm() {
     
     if (loginUser.fulfilled.match(result)) {
       toast.success("Signed in successfully!")
+      setIsSuccess(true)
       setTimeout(() => {
         router.push("/")
       }, 1500)
@@ -68,6 +71,15 @@ export function SignInForm() {
 
 
 
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 space-y-4">
+        <LoaderThree />
+        <p className="text-primary font-bold animate-pulse">Entering QuizMaster...</p>
+      </div>
+    )
   }
 
   return (

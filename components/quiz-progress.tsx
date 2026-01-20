@@ -22,7 +22,7 @@ export function QuizProgress({ current, total, timeRemaining, maxTime }: QuizPro
   const getTimerColor = () => {
     if (isCritical) return "from-red-500 to-red-600"
     if (isTimeRunningOut) return "from-orange-500 to-orange-600"
-    return "from-purple-500 to-blue-500"
+    return "from-[#90AB8B] to-[#84934A]"
   }
 
   return (
@@ -61,8 +61,8 @@ export function QuizProgress({ current, total, timeRemaining, maxTime }: QuizPro
           {/* Animated progress circle */}
           <defs>
             <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={isCritical ? "#ef4444" : isTimeRunningOut ? "#f97316" : "#a855f7"} />
-              <stop offset="100%" stopColor={isCritical ? "#dc2626" : isTimeRunningOut ? "#ea580c" : "#7c3aed"} />
+              <stop offset="0%" stopColor={isCritical ? "#ef4444" : isTimeRunningOut ? "#f97316" : "#6DC3BB"} />
+              <stop offset="100%" stopColor={isCritical ? "#dc2626" : isTimeRunningOut ? "#ea580c" : "#549992"} />
             </linearGradient>
           </defs>
           <circle

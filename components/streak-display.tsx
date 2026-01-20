@@ -103,7 +103,7 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
         </div>
 
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-[#6DC3BB] rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
           <div className="relative bg-card border border-border rounded-lg p-4 hover:border-primary/40 transition-colors shadow-sm">
             <div className="flex items-center justify-between">
               <div>

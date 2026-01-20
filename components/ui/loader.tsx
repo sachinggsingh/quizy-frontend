@@ -162,7 +162,7 @@ export const LoaderFour = ({ text = "Loading..." }: { text?: string }) => {
         {text}
       </motion.span>
       <motion.span
-        className="absolute inset-0 text-[#8b00ff]/50 dark:text-[#8b00ff]"
+        className="absolute inset-0 text-[#6DC3BB]/50 dark:text-[#6DC3BB]"
         animate={{
           x: [0, 1, -1.5, 1.5, -1, 0],
           y: [0, -1, 1.5, -0.5, 0],

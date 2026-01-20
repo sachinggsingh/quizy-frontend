@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { LoaderThree } from "@/components/ui/loader"
 
 export function SignUpForm() {
   const router = useRouter()
@@ -19,6 +20,7 @@ export function SignUpForm() {
   const { isLoading, error } = useAppSelector((state) => state.auth)
   const [formData, setFormData] = useState({ name: "", email: "", password: "",  })
   const [formError, setFormError] = useState("")
+  const [isSuccess, setIsSuccess] = useState(false)
 
   useEffect(() => {
     if (error) {
@@ -70,6 +72,7 @@ export function SignUpForm() {
 
     if (registerUser.fulfilled.match(result)) {
       toast.success("Account created successfully! Redirecting...")
+      setIsSuccess(true)
       setTimeout(() => {
         router.push("/sign-in")
       }, 1500)
@@ -84,6 +87,15 @@ export function SignUpForm() {
   }
 
 
+
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 space-y-4">
+        <LoaderThree />
+        <p className="text-primary font-bold animate-pulse">Account created! Returning to Sign In...</p>
+      </div>
+    )
+  }
 
   return (
     <Card className="border-primary/20 shadow-lg">
