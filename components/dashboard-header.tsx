@@ -28,13 +28,13 @@ export function DashboardHeader() {
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="/dashboard" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             Dashboard
           </Link>
-          <Link href="/leaderboard" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="/leaderboard" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             Leaderboard
           </Link>
-          <Link href="/profile" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="/profile" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             Profile
           </Link>
         </nav>

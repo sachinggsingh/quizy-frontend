@@ -16,6 +16,7 @@ export interface Quiz {
     questions: Question[]
     points: number
     completed?: boolean
+    attempted?: boolean
 }
 
 interface QuizState {

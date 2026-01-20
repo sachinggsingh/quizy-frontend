@@ -73,17 +73,17 @@ export function HomeHeader() {
         </div>
 
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="#features" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="#features" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             Features
           </Link>
-          <Link href="#how-it-works" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="#how-it-works" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             How it Works
           </Link>
-          <Link href="#testimonials" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link href="#testimonials" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             Testimonials
           </Link>
           {mounted && isAuthenticated && (
-            <Link href="/leaderboard" className="text-foreground hover:text-primary font-medium transition-colors">
+            <Link href="/leaderboard" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
               Leaderboard
             </Link>
           )}

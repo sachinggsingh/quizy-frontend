@@ -8,6 +8,7 @@ import { fetchQuizzes } from "@/lib/features/quiz/quizSlice"
 import { fetchProfile } from "@/lib/features/auth/authSlice"
 import { useEffect, useState } from "react"
 import { LoaderThree, LoaderFive } from "@/components/ui/loader"
+import { Button } from "@/components/ui/button"
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch()
@@ -32,6 +33,11 @@ export default function DashboardPage() {
   const rank = user?.rank || "-"
 
   const effectivelyLoading = isLoading || showMinLoader
+  const [filter, setFilter] = useState<"new" | "attempted">("new")
+
+  const filteredQuizzes = quizzes.filter(quiz => 
+    filter === "attempted" ? quiz.attempted : !quiz.attempted
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,9 +58,34 @@ export default function DashboardPage() {
 
         {/* Quizzes Section */}
         <div>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-foreground mb-2">Available Quizzes</h2>
-            <p className="text-muted-foreground">Choose a quiz to test your knowledge</p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Available Quizzes</h2>
+              <p className="text-muted-foreground">Choose a quiz to test your knowledge</p>
+            </div>
+            
+            <div className="flex bg-accent/20 p-1 gap-2 rounded-xl border border-border/50">
+              <Button
+                onClick={() => setFilter("new")}
+                className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  filter === "new" 
+                    ? "cursor-pointer bg-primary text-white shadow-md shadow-primary/20" 
+                    : "cursor-pointer text-muted-foreground hover:text-foreground hover:bg-accent/30"
+                }`}
+              >
+                New Quizzes
+              </Button>
+              <Button
+                onClick={() => setFilter("attempted")}
+                className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  filter === "attempted" 
+                    ? "cursor-pointer bg-primary text-white shadow-md shadow-primary/20" 
+                    : "cursor-pointer text-muted-foreground hover:text-foreground hover:bg-accent/30"
+                }`}
+              >
+                Attempted
+              </Button>
+            </div>
           </div>
 
           {effectivelyLoading ? (
@@ -64,13 +95,22 @@ export default function DashboardPage() {
             </div>
           ) : error ? (
              <div className="text-destructive text-center py-10 bg-destructive/10 rounded-lg border border-destructive/20">{error}</div>
-          ) : quizzes.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-border/50 rounded-xl">
-              No quizzes available yet. Check back later!
+          ) : filteredQuizzes.length === 0 ? (
+            <div className="text-center py-16 text-muted-foreground border-2 border-dashed border-border/50 rounded-2xl bg-accent/5">
+              <div className="max-w-xs mx-auto">
+                <p className="text-lg font-medium mb-1">
+                  {filter === "attempted" ? "No attempted quizzes" : "You've finished them all!"}
+                </p>
+                <p className="text-sm opacity-70">
+                  {filter === "attempted" 
+                    ? "Start a new quiz to track your progress here." 
+                    : "Check back later for fresh challenges or retake an old one."}
+                </p>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {quizzes.map((quiz) => (
+              {filteredQuizzes.map((quiz) => (
                 <QuizCard 
                   key={quiz.id} 
                   id={quiz.id}
@@ -78,7 +118,7 @@ export default function DashboardPage() {
                   description={quiz.description || `Challenge yourself with our ${quiz.title} quiz!`}
                   difficulty={quiz.difficulty || "Medium"}
                   questions={quiz.questions ? quiz.questions.length : 0}
-                  completed={quiz.completed || false} 
+                  completed={quiz.attempted || false} 
                 />
               ))}
             </div>
