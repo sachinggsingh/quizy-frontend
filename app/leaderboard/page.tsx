@@ -69,41 +69,41 @@ export default function LeaderboardPage() {
     <div className="min-h-screen bg-background">
       <DashboardHeader />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Global Leaderboard</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Global Leaderboard</h1>
           <p className="text-muted-foreground">Compete with quiz enthusiasts around the world</p>
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto mb-4 ">
           <Card className="border-primary/20 bg-card/50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-4">
               <div className="text-center">
-                <p className="text-muted-foreground text-sm mb-2">Your Rank</p>
-                <p className="text-4xl font-bold text-primary">#{userStats.rank}</p>
-                <p className="text-xs text-muted-foreground mt-2">Global rating</p>
+                <p className="text-center text-muted-foreground text-sm mb-2">Your Rank</p>
+                <p className="text-center text-4xl font-bold text-primary">#{userStats.rank}</p>
+                <p className="text-center text-xs text-muted-foreground mt-2">Global rating</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-primary/20 bg-card/50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-4">
               <div className="text-center">
-                <p className="text-muted-foreground text-sm mb-2">Your Points</p>
-                <p className="text-4xl font-bold text-primary">{userStats.score.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground mt-2">Cumulative score</p>
+                <p className="text-center text-muted-foreground text-sm mb-2">Your Points</p>
+                <p className="text-center text-4xl font-bold text-primary">{userStats.score.toLocaleString()}</p>
+                <p className="text-center text-xs text-muted-foreground mt-2">Cumulative score</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-primary/20 bg-card/50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-4">
               <div className="text-center">
-                <p className="text-muted-foreground text-sm mb-2">Total Quizzes</p>
-                <p className="text-4xl font-bold text-primary">{currentUser?.completedQuizzes || 0}</p>
-                <p className="text-xs text-muted-foreground mt-2">Finished assessments</p>
+                <p className="text-center text-muted-foreground text-sm mb-2">Total Quizzes</p>
+                <p className="text-center text-4xl font-bold text-primary">{currentUser?.completedQuizzes || 0}</p>
+                <p className="text-center text-xs text-muted-foreground mt-2">Finished assessments</p>
               </div>
             </CardContent>
           </Card>

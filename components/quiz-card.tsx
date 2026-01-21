@@ -44,8 +44,8 @@ export function QuizCard({ id, title, description, difficulty, questions, comple
         </div>
 
         {completed ? (
-          <Button asChild className="w-full bg-primary/70 hover:bg-primary text-primary-foreground">
-            <Link href={`/quiz/${id}`}>Retake Quiz</Link>
+          <Button disabled className="w-full bg-primary/20 text-muted-foreground cursor-not-allowed">
+            Completed
           </Button>
         ) : (
           <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
