@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useAppDispatch } from "@/lib/hooks"
 import { logoutUser } from "@/lib/features/auth/authSlice"
 import { ModeToggle } from "@/components/mode-toggle"
+import { NotificationsDropdown } from "./notifications-dropdown"
 
 export function DashboardHeader() {
   const dispatch = useAppDispatch()
@@ -37,10 +38,14 @@ export function DashboardHeader() {
           <Link href="/profile" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
             Profile
           </Link>
+          <Link href="/discussion" className="text-foreground hover:text-primary font-medium transition-colors nav-link pb-1">
+            Discussion
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
           <ModeToggle />
+          <NotificationsDropdown />
           <Button variant="outline" onClick={handleLogout}>
             Sign Out
           </Button>
