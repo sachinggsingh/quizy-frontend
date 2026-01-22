@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { logoutUser } from "@/lib/features/auth/authSlice"
 import { ModeToggle } from "@/components/mode-toggle"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 
 export function HomeHeader() {
   const [mounted, setMounted] = useState(false)
@@ -40,9 +41,14 @@ export function HomeHeader() {
           <Button variant="ghost" className="hidden sm:flex" onClick={handleLogout}>
             <span>Log Out</span>
           </Button>
-          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Link href="/dashboard">Dashboard</Link>
-          </Button>
+          <HoverBorderGradient
+            as={Link}
+            href="/dashboard"
+            containerClassName="rounded-full"
+            className="bg-white text-black dark:bg-[#6DC3BB] dark:text-white dark:hover:text-black flex items-center space-x-2"
+          >
+            <span>Dashboard</span>
+          </HoverBorderGradient>
         </>
       )
     }
@@ -67,7 +73,7 @@ export function HomeHeader() {
             <span className="text-lg font-bold text-primary-foreground">Q</span>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-foreground">QuizMaster</h1>
+              <h1 className="text-xl font-bold text-foreground">QuizMaster</h1>
             <p className="text-xs text-muted-foreground">Test your knowledge</p>
           </div>
         </div>
