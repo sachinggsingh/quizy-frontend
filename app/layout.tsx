@@ -13,7 +13,6 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "QuizMaster - Test Your Knowledge",
   description: "Challenge yourself with QuizMaster. Take quizzes, compete with others, and climb the leaderboard.",
-  generator: "v0.app",
   icons: {
     icon: [
       {
