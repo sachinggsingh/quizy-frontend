@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { DashboardHeader } from "@/components/dashboard-header"
+
 import { LeaderboardTable } from "@/components/leaderboard-table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -29,32 +29,79 @@ export default function LeaderboardPage() {
   }, [mounted, isAuthenticated, router])
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080/ws/leaderboard")
+    let socket: WebSocket | null = null
+    let reconnectTimeout: NodeJS.Timeout
+    let isMounted = true
 
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (Array.isArray(data)) {
-          const mappedData = data.map((user: any, index: number) => ({
-            rank: index + 1,
-            name: user.name,
-            avatar: user.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "?",
-            score: user.score,
-            quizzesCompleted: user.completedQuizzes || 0,
-            averageScore: Math.round(user.averageScore || 0),
-            isCurrentUser: user.id === currentUser?.id,
-          }))
-          setLeaderboardData(mappedData)
+      const connect = () => {
+        if (!isMounted) return
+
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
+        // Ensure backendUrl doesn't have a trailing slash
+        const cleanBackendUrl = backendUrl.replace(/\/$/, "")
+        // Replace http/https with ws/wss
+        const wsProtocol = cleanBackendUrl.startsWith("https") ? "wss" : "ws"
+        const wsBaseUrl = cleanBackendUrl.replace(/^https?:\/\//, "")
+        const wsUrl = `${wsProtocol}://${wsBaseUrl}/ws/leaderboard`
+      
+      console.log("Connecting to Leaderboard WebSocket:", wsUrl)
+      const ws = new WebSocket(wsUrl)
+      socket = ws
+
+      ws.onmessage = (event) => {
+        try {
+          // Identify if it's a wrapped message or raw array
+          const message = JSON.parse(event.data)
+          
+          let users: any[] = []
+          if (message.type === "LEADERBOARD_UPDATE" && Array.isArray(message.data)) {
+             users = message.data
+          } else if (Array.isArray(message)) {
+             users = message
+          }
+
+          if (users.length > 0) {
+            const mappedData = users.map((user: any, index: number) => ({
+              rank: index + 1,
+              name: user.name,
+              avatar: user.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "?",
+              score: user.score,
+              quizzesCompleted: user.completedQuizzes || 0,
+              averageScore: Math.round(user.averageScore || 0),
+              isCurrentUser: user.id === currentUser?.id,
+            }))
+            setLeaderboardData(mappedData)
+          }
+        } catch (err) {
+          console.error("Failed to parse leaderboard data:", err)
         }
-      } catch (err) {
-        console.error("Failed to parse leaderboard data:", err)
+      }
+
+      ws.onerror = (err) => {
+        console.error("Leaderboard WebSocket error:", err)
+      }
+
+      ws.onclose = (event) => {
+        console.log("Leaderboard WebSocket closed:", event.code, event.reason)
+        // Only reconnect if the closure wasn't intentional (not 1000 or 1001, and still mounted)
+        if (isMounted && event.code !== 1000 && event.code !== 1001) {
+          reconnectTimeout = setTimeout(connect, 3000)
+        }
       }
     }
 
-    return () => {
-      ws.close()
+    if (mounted && isAuthenticated) {
+      connect()
     }
-  }, [currentUser])
+
+    return () => {
+      isMounted = false
+      if (socket) {
+        socket.close(1000, "Component unmounting")
+      }
+      clearTimeout(reconnectTimeout)
+    }
+  }, [mounted, isAuthenticated, currentUser?.id])
 
   const userStats = leaderboardData.find(u => u.isCurrentUser) || {
     rank: currentUser?.rank || "-",
@@ -67,7 +114,6 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Header Section */}

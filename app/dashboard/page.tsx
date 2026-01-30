@@ -1,6 +1,6 @@
 "use client"
 
-import { DashboardHeader } from "@/components/dashboard-header"
+
 import { QuizCard } from "@/components/quiz-card"
 import { StatsCard } from "@/components/stats-card"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
@@ -14,6 +14,8 @@ export default function DashboardPage() {
   const dispatch = useAppDispatch()
   const { quizzes, isLoading, error } = useAppSelector((state) => state.quiz)
   const [showMinLoader, setShowMinLoader] = useState(true)
+  const [globalRank, setGlobalRank] = useState<number | string>("-")
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth)
 
   useEffect(() => {
     dispatch(fetchQuizzes())
@@ -26,11 +28,113 @@ export default function DashboardPage() {
     return () => clearTimeout(timer)
   }, [dispatch])
 
+  // Connect to WebSocket to get real-time leaderboard data for rank calculation
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return
+
+    let socket: WebSocket | null = null
+    let reconnectTimeout: NodeJS.Timeout
+    let isMounted = true
+
+    const calculateRank = (users: any[]) => {
+      if (users.length === 0) return
+      
+      // Find current user's position in the sorted leaderboard
+      const userIndex = users.findIndex((u: any) => u.id === user?.id)
+      if (userIndex !== -1) {
+        // User is in the leaderboard, rank is their position + 1
+        setGlobalRank(userIndex + 1)
+      } else {
+        // User not in top 10, estimate rank based on score comparison
+        // This gives a minimum rank (could be higher if there are users with same score)
+        const usersWithHigherScore = users.filter((u: any) => u.score > (user?.score || 0))
+        const minRank = usersWithHigherScore.length + 1
+        // If user's score is less than the last person in top 10, they're definitely > 10
+        if (users.length > 0 && user?.score !== undefined && user.score < users[users.length - 1]?.score) {
+          setGlobalRank(`>${users.length}`) // Show ">10" if not in top 10
+        } else {
+          setGlobalRank(minRank)
+        }
+      }
+    }
+
+    const connect = () => {
+      if (!isMounted) return
+
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
+      const cleanBackendUrl = backendUrl.replace(/\/$/, "")
+      const wsProtocol = cleanBackendUrl.startsWith("https") ? "wss" : "ws"
+      const wsBaseUrl = cleanBackendUrl.replace(/^https?:\/\//, "")
+      const wsUrl = `${wsProtocol}://${wsBaseUrl}/ws/leaderboard`
+      
+      try {
+        const ws = new WebSocket(wsUrl)
+        socket = ws
+
+        ws.onopen = () => {
+          console.log("Dashboard WebSocket connected for rank updates")
+        }
+
+        ws.onmessage = (event) => {
+          try {
+            const message = JSON.parse(event.data)
+            
+            let users: any[] = []
+            if (message.type === "LEADERBOARD_UPDATE" && Array.isArray(message.data)) {
+              users = message.data
+            } else if (Array.isArray(message)) {
+              users = message
+            }
+
+            if (users.length > 0) {
+              calculateRank(users)
+            }
+          } catch (err) {
+            console.error("Failed to parse leaderboard data in dashboard:", err)
+          }
+        }
+
+        ws.onerror = () => {
+          console.warn("Dashboard WebSocket error for rank updates")
+        }
+
+        ws.onclose = (event) => {
+          if (isMounted && event.code !== 1000 && event.code !== 1001) {
+            reconnectTimeout = setTimeout(connect, 3000)
+          }
+        }
+      } catch (err) {
+        console.error("Failed to create WebSocket connection for dashboard:", err)
+        if (isMounted) {
+          reconnectTimeout = setTimeout(connect, 5000)
+        }
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      connect()
+    }
+
+    return () => {
+      isMounted = false
+      clearTimeout(reconnectTimeout)
+      if (socket) {
+        try {
+          if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+            socket.close(1000, "Component unmounting")
+          }
+        } catch (err) {
+          // Ignore errors during cleanup
+        }
+        socket = null
+      }
+    }
+  }, [isAuthenticated, user?.id, user?.score])
+
   // Use real user data if available in redux, otherwise 0/default
-  const user = useAppSelector((state) => state.auth.user)
   const completedQuizzes = user?.completedQuizzes || 0 
   const averageScore = user?.averageScore || 0
-  const rank = user?.rank || "-"
+  const rank = globalRank // Use rank from WebSocket instead of user.rank
 
   const effectivelyLoading = isLoading || showMinLoader
   const [filter, setFilter] = useState<"new" | "attempted">("new")
@@ -41,7 +145,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Section */}
@@ -53,7 +156,7 @@ export default function DashboardPage() {
             subtext={`${(quizzes?.length || 0) > 0 ? Math.round((completedQuizzes / quizzes.length) * 100) : 0}% progress`}
           />
           <StatsCard label="Average Score" value={`${Math.round(averageScore)}%`} subtext="Across completed quizzes" />
-          <StatsCard label="Global Rank" value={`#${rank}`} subtext="Out of users" />
+          <StatsCard label="Global Rank" value={`#${rank}`} subtext="Your position globally" />
         </div>
 
         {/* Quizzes Section */}

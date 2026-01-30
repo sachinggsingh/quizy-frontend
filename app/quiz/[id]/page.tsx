@@ -14,7 +14,7 @@ import { useParams } from "next/navigation"
 import { LoaderThree, LoaderFive } from "@/components/ui/loader"
 import { motion, AnimatePresence } from "framer-motion"
 import { Trophy, CheckCircle2, XCircle, Timer, ArrowRight, ArrowLeft, Flag, LogOut } from "lucide-react"
-import { DashboardHeader } from "@/components/dashboard-header"
+
 
 export default function QuizPage() {
   const params = useParams()
@@ -146,7 +146,6 @@ export default function QuizPage() {
 
   const content = (
     <div className="min-h-screen bg-background relative overflow-x-hidden no-scrollbar">
-      <DashboardHeader />
       
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">

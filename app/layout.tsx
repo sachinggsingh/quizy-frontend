@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import StoreProvider from "@/components/providers"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
+import { DashboardHeader } from "@/components/dashboard-header"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -48,6 +49,7 @@ export default function RootLayout({
             // disableTransitionOnChange
           >
             <Toaster position="bottom-right" />
+            <DashboardHeader />
             {children}
             <Analytics />
           </ThemeProvider>

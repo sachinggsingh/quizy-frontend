@@ -1,5 +1,6 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useAppDispatch } from "@/lib/hooks"
@@ -9,6 +10,17 @@ import { NotificationsDropdown } from "./notifications-dropdown"
 
 export function DashboardHeader() {
   const dispatch = useAppDispatch()
+  const pathname = usePathname()
+
+  // Define public routes where the header should NOT be visible
+  const publicRoutes = ["/", "/sign-in", "/sign-up"]
+  
+  // Also check if it's strictly a public route. 
+  // If we have dynamic public routes, we might need more complex logic, 
+  // but for now strict equality is good for established routes.
+  if (publicRoutes.includes(pathname)) {
+    return null
+  }
 
   const handleLogout = () => {
     dispatch(logoutUser())

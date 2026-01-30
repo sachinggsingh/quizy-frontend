@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { DashboardHeader } from "@/components/dashboard-header"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Send, Heart, MessageCircle, MoreVertical, Search } from "lucide-react"
@@ -99,7 +99,6 @@ export default function DiscussionPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}

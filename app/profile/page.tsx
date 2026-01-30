@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { DashboardHeader } from "@/components/dashboard-header"
+
 import { ProfileHeader } from "@/components/profile-header"
 import { ProfileStats } from "@/components/profile-stats"
 import { AchievementCard } from "@/components/achievement-card"
@@ -80,7 +80,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
