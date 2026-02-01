@@ -55,7 +55,7 @@ export default function HomePage() {
                 pointerClassName="text-primary"
                 rectangleClassName="border-primary/20 dark:border-primary/40"
               >
-                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">QuizMaster</span>
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">MindClash</span>
               </PointerHighlight>
             </h2>
             <p className="text-xl text-muted-foreground text-balance max-w-2xl mx-auto">
@@ -99,7 +99,7 @@ export default function HomePage() {
       <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="space-y-12">
           <motion.div className="text-center space-y-4" {...fadeInUp}>
-            <h3 className="text-4xl md:text-5xl font-bold text-foreground">Why Choose QuizMaster?</h3>
+            <h3 className="text-4xl md:text-5xl font-bold text-foreground">Why Choose MindClash?</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Everything you need to test your knowledge and compete globally
             </p>
@@ -202,7 +202,7 @@ export default function HomePage() {
               {
                 name: "Alex Johnson",
                 role: "Student",
-                content: "QuizMaster helped me ace my exams! The diverse question types really tested my knowledge.",
+                content: "MindClash helped me ace my exams! The diverse question types really tested my knowledge.",
                 avatar: "AJ",
               },
               {
@@ -316,7 +316,7 @@ export default function HomePage() {
         >
           <h3 className="text-4xl md:text-5xl font-bold text-foreground">Ready to Test Your Knowledge?</h3>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join QuizMaster today and start your learning journey with thousands of engaging quizzes.
+            Join MindClash today and start your learning journey with thousands of engaging quizzes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
@@ -420,7 +420,7 @@ export default function HomePage() {
                 <div className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
                   <span className="text-sm font-bold text-primary-foreground">Q</span>
                 </div>
-                <p className="text-sm text-muted-foreground">© 2026 QuizMaster. All rights reserved.</p>
+                <p className="text-sm text-muted-foreground">© 2026 MindClash. All rights reserved.</p>
               </div>
             </div>
           </div>

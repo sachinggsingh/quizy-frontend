@@ -73,7 +73,7 @@ export function HomeHeader() {
             <span className="text-lg font-bold text-primary-foreground">Q</span>
           </div>
           <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-foreground">QuizMaster</h1>
+              <h1 className="text-xl font-bold text-foreground">MindClash</h1>
             <p className="text-xs text-muted-foreground">Test your knowledge</p>
           </div>
         </div>

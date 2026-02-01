@@ -101,7 +101,7 @@ export function SignUpForm() {
     <Card className="border-primary/20 shadow-lg">
       <CardHeader className="space-y-2">
         <CardTitle className="text-2xl">Create Account</CardTitle>
-        <CardDescription>Join QuizMaster and start competing today</CardDescription>
+        <CardDescription>Join MindClash and start competing today</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

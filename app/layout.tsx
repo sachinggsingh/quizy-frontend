@@ -5,15 +5,16 @@ import { Analytics } from "@vercel/analytics/next"
 import StoreProvider from "@/components/providers"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
-import { DashboardHeader } from "@/components/dashboard-header"
+import { SidebarProvider } from "@/components/sidebar-provider"
+import { LayoutContent } from "@/components/layout-content"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "QuizMaster - Test Your Knowledge",
-  description: "Challenge yourself with QuizMaster. Take quizzes, compete with others, and climb the leaderboard.",
+  title: "MindClash - Test Your Knowledge",
+  description: "Challenge yourself with MindClash. Take quizzes, compete with others, and climb the leaderboard.",
   icons: {
     icon: [
       {
@@ -42,15 +43,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
         <StoreProvider>
-          < ThemeProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             // disableTransitionOnChange
           >
             <Toaster position="bottom-right" />
-            <DashboardHeader />
-            {children}
+            <SidebarProvider>
+              <LayoutContent>{children}</LayoutContent>
+            </SidebarProvider>
             <Analytics />
           </ThemeProvider>
         </StoreProvider>

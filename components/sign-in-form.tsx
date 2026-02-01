@@ -77,7 +77,7 @@ export function SignInForm() {
     return (
       <div className="flex flex-col items-center justify-center p-8 space-y-4">
         <LoaderThree />
-        <p className="text-primary font-bold animate-pulse">Entering QuizMaster...</p>
+        <p className="text-primary font-bold animate-pulse">Entering MindClash...</p>
       </div>
     )
   }

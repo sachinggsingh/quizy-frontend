@@ -130,14 +130,21 @@ const authSlice = createSlice({
             state.isAuthenticated = false
         })
 
-        // Fetch Profile
+        // Fetch Profile — normalize backend response (snake_case) to camelCase for UI
         builder
             .addCase(fetchProfile.pending, (state) => {
                 state.isLoading = true
             })
             .addCase(fetchProfile.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.user = action.payload
+                const p = action.payload as any
+                const completedIds = p?.completed_quiz_ids ?? p?.completedQuizIds ?? []
+                state.user = {
+                    ...p,
+                    completedQuizzes: Array.isArray(completedIds) ? completedIds.length : (p?.completedQuizzes ?? 0),
+                    completedQuizIds: Array.isArray(completedIds) ? completedIds : [],
+                    averageScore: typeof p?.average_score === 'number' ? p.average_score : (p?.averageScore ?? 0),
+                }
             })
             .addCase(fetchProfile.rejected, (state, action) => {
                 state.isLoading = false

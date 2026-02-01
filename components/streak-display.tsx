@@ -120,10 +120,10 @@ export function StreakDisplay({ user }: StreakDisplayProps) {
       </div>
 
       {/* GitHub Style Contribution Graph - Exact Replica */}
-      <div className="bg-card border border-border rounded-lg p-6 hover:border-primary/40 transition-colors shadow-md">
+      <div className="bg-card border border-border rounded-lg p-4 hover:border-primary/40 transition-colors shadow-md">
         <h3 className="text-sm font-semibold mb-4 text-foreground">Your activity</h3>
 
-        <div className="overflow-x-auto no-scrollbar pb-4">
+        <div className="overflow-x-auto pb-4">
           <div className="inline-flex gap-1">
             {streakWeeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">

@@ -12,7 +12,7 @@ export function PageLoader() {
         
         <div className="flex flex-col items-center">
             <div className="text-2xl">
-              <LoaderFive text="QuizMaster" />
+              <LoaderFive text="MindClash" />
             </div>
         </div>
       </div>
