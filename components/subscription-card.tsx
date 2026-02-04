@@ -16,7 +16,11 @@ export function SubscriptionCard({ currentPlan, isSubscribed }: SubscriptionCard
   const handleSubscribe = async (plan: "pro" | "enterprise") => {
     try {
       setLoading(plan)
-      const { url } = await createCheckoutSession(plan)
+      const priceId = plan === "pro" 
+        ? process.env.NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE_ID 
+        : process.env.NEXT_PUBLIC_STRIPE_ENTERPRISE_PLAN_PRICE_ID
+      
+      const { url } = await createCheckoutSession(plan, priceId)
       if (url) {
         window.location.href = url
       }

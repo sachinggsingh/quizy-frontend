@@ -8,7 +8,7 @@ export function SettingsCompany() {
   const companyInfo = [
     { label: "Company Name", value: "MindClash Inc." },
     { label: "Founded", value: "2024" },
-    { label: "Headquarters", value: "San Francisco, CA, USA" },
+    { label: "Headquarters", value: "Vadodara, Gujarat, India" },
     { label: "Team Size", value: "50+ team members" },
   ]
 
@@ -20,9 +20,9 @@ export function SettingsCompany() {
   ]
 
   const contactInfo = [
-    { label: "Email", value: "support@MindClash.com", icon: Mail },
+    { label: "Email", value: "mindclash@gmail.com", icon: Mail },
     { label: "Website", value: "www.MindClash.com", icon: Globe },
-    { label: "Address", value: "123 Tech Street, San Francisco, CA 94102", icon: MapPin },
+    { label: "Address", value: "Vadodara, Gujarat, India", icon: MapPin },
   ]
 
   return (

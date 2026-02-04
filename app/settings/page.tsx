@@ -22,14 +22,11 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* Header */}
-        <div className="mb-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-8">
+        {/* <div className="mb-2"> */}
           <h1 className="text-3xl font-bold text-foreground mb-2">Settings</h1>
           <p className="text-muted-foreground">Manage your account, security, and preferences</p>
-        </div>
+        {/* </div> */}
 
         {/* Tabs */}
         <div className="flex gap-2 mb-8 flex-wrap">

@@ -15,10 +15,19 @@ export const getSubscription = async () => {
   }
   const text = await res.text();
   if (!text || text.trim() === "") return null;
-  return JSON.parse(text);
+  try {
+    const parsed = JSON.parse(text);
+    // API responses are wrapped as { data, success }, so unwrap if present
+    if (parsed && typeof parsed === "object" && "data" in parsed) {
+      return (parsed as { data?: unknown }).data ?? null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
 };
 
-export const createCheckoutSession = async (plan: "pro" | "enterprise") => {
+export const createCheckoutSession = async (plan: "pro" | "enterprise", priceId?: string) => {
   const token = getAuthToken();
   const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {
     method: "POST",
@@ -26,7 +35,7 @@ export const createCheckoutSession = async (plan: "pro" | "enterprise") => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ plan }),
+    body: JSON.stringify({ plan, price_id: priceId }),
   });
 
   if (!res.ok) {
