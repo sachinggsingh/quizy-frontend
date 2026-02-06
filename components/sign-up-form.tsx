@@ -71,11 +71,23 @@ export function SignUpForm() {
     }))
 
     if (registerUser.fulfilled.match(result)) {
-      toast.success("Account created successfully! Redirecting...")
-      setIsSuccess(true)
-      setTimeout(() => {
-        router.push("/sign-in")
-      }, 1500)
+      // Check if auto-login was successful (cookies were set)
+      const response = result.payload as any
+      if (response.access_token || response.refresh_token) {
+        // Auto-login successful, redirect to dashboard
+        toast.success("Account created successfully! Welcome!")
+        setIsSuccess(true)
+        setTimeout(() => {
+          router.push("/dashboard")
+        }, 1500)
+      } else {
+        // Auto-login failed, redirect to sign-in
+        toast.success("Account created successfully! Please sign in.")
+        setIsSuccess(true)
+        setTimeout(() => {
+          router.push("/sign-in")
+        }, 1500)
+      }
     } else if (registerUser.rejected.match(result)) {
       const errorMessage = (result.payload as string) || "Registration failed"
       toast.error(errorMessage)
@@ -92,7 +104,7 @@ export function SignUpForm() {
     return (
       <div className="flex flex-col items-center justify-center p-8 space-y-4">
         <LoaderThree />
-        <p className="text-primary font-bold animate-pulse">Account created! Returning to Sign In...</p>
+        <p className="text-primary font-bold animate-pulse">Setting up your account...</p>
       </div>
     )
   }

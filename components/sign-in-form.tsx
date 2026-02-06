@@ -59,11 +59,13 @@ export function SignInForm() {
     if (loginUser.fulfilled.match(result)) {
       toast.success("Signed in successfully!")
       setIsSuccess(true)
+      // Profile is automatically fetched by loginUser thunk
       setTimeout(() => {
-        router.push("/")
+        router.push("/dashboard")
       }, 1500)
     } else if (loginUser.rejected.match(result)) {
-      toast.error("Invalid credentials")
+      const errorMessage = (result.payload as string) || "Invalid credentials"
+      toast.error(errorMessage)
       setTimeout(() => {
         setFormData({ email: "", password: "" })
       }, 1000)

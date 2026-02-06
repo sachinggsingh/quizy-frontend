@@ -1,13 +1,8 @@
-import { getAuthToken } from "@/lib/utils";
-
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
 export const getSubscription = async () => {
-  const token = getAuthToken();
   const res = await fetch(`${BACKEND_URL}/subscription`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: 'include', // Include cookies for authentication
   });
   if (!res.ok) {
     if (res.status === 404) return null;
@@ -28,13 +23,12 @@ export const getSubscription = async () => {
 };
 
 export const createCheckoutSession = async (plan: "pro" | "enterprise", priceId?: string) => {
-  const token = getAuthToken();
   const res = await fetch(`${BACKEND_URL}/create-checkout-session`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: 'include', // Include cookies for authentication
     body: JSON.stringify({ plan, price_id: priceId }),
   });
 

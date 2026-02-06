@@ -9,11 +9,11 @@ interface AuthState {
     error: string | null
 }
 
-// Initial state
+// Initial state - cookies are handled automatically by the browser
 const initialState: AuthState = {
     user: null,
-    token: typeof window !== 'undefined' ? localStorage.getItem('access_token') : null,
-    isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('access_token') : false,
+    token: null, // Tokens are now stored in cookies, not localStorage
+    isAuthenticated: false, // Will be set after successful login or profile fetch
     isLoading: false,
     error: null,
 }
@@ -21,18 +21,19 @@ const initialState: AuthState = {
 // Async Thunks
 export const loginUser = createAsyncThunk(
     'auth/login',
-    async (credentials: any, { rejectWithValue }) => {
+    async (credentials: any, { rejectWithValue, dispatch }) => {
         try {
             const response = await fetchClient('/login', {
                 method: 'POST',
                 body: JSON.stringify(credentials),
             })
 
-            // Store tokens
-            localStorage.setItem('access_token', response.access_token)
-            if (response.refresh_token) {
-                localStorage.setItem('refresh_token', response.refresh_token)
-            }
+            // Tokens are now stored in HTTP-only cookies by the backend
+            // No need to store them in localStorage
+            // Backend still returns tokens in response for backward compatibility
+
+            // Fetch user profile immediately after login
+            await dispatch(fetchProfile())
 
             return response
         } catch (error: any) {
@@ -43,12 +44,20 @@ export const loginUser = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
     'auth/register',
-    async (userData: any, { rejectWithValue }) => {
+    async (userData: any, { rejectWithValue, dispatch }) => {
         try {
             const response = await fetchClient('/users', {
                 method: 'POST',
                 body: JSON.stringify(userData),
             })
+
+            // Backend now auto-logs in after registration and sets cookies
+            // If tokens are present in response, fetch user profile
+            if (response.access_token || response.user) {
+                // Fetch user profile to populate state
+                await dispatch(fetchProfile())
+            }
+
             return response
         } catch (error: any) {
             return rejectWithValue(error.message || 'Registration failed')
@@ -72,11 +81,24 @@ export const logoutUser = createAsyncThunk(
     'auth/logout',
     async (_, { rejectWithValue }) => {
         try {
-            // Clear local storage
-            localStorage.removeItem('access_token')
-            localStorage.removeItem('refresh_token')
+            // Call backend logout endpoint to clear cookies
+            await fetchClient('/logout', {
+                method: 'POST',
+            })
+            
+            // Clear any remaining localStorage items (for backward compatibility)
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('access_token')
+                localStorage.removeItem('refresh_token')
+            }
+            
             return null
         } catch (error: any) {
+            // Even if logout fails, clear local state
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('access_token')
+                localStorage.removeItem('refresh_token')
+            }
             return rejectWithValue(error.message)
         }
     }
@@ -97,11 +119,11 @@ const authSlice = createSlice({
                 state.isLoading = true
                 state.error = null
             })
-            .addCase(loginUser.fulfilled, (state, action) => {
+            .addCase(loginUser.fulfilled, (state) => {
                 state.isLoading = false
-                state.isAuthenticated = true
-                state.token = action.payload.access_token
-                // Ideally fetch user profile here or decode token
+                state.isAuthenticated = true // Cookies are set, user is authenticated
+                state.token = null // Tokens are in cookies, not stored in state
+                // User profile is automatically fetched by loginUser thunk
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false
@@ -116,7 +138,8 @@ const authSlice = createSlice({
             })
             .addCase(registerUser.fulfilled, (state) => {
                 state.isLoading = false
-                // Registration successful, usually redirect to login
+                // If auto-login was successful, isAuthenticated will be set by fetchProfile
+                // Otherwise, user will be redirected to sign-in page
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.isLoading = false
@@ -137,6 +160,7 @@ const authSlice = createSlice({
             })
             .addCase(fetchProfile.fulfilled, (state, action) => {
                 state.isLoading = false
+                state.isAuthenticated = true // User is authenticated if profile fetch succeeds
                 const p = action.payload as any
                 const completedIds = p?.completed_quiz_ids ?? p?.completedQuizIds ?? []
                 state.user = {
@@ -148,6 +172,9 @@ const authSlice = createSlice({
             })
             .addCase(fetchProfile.rejected, (state, action) => {
                 state.isLoading = false
+                // Don't set isAuthenticated to false if profile fetch fails
+                // Cookies might still be valid, just profile fetch failed
+                // User will be redirected to sign-in on next 401 error
                 state.error = action.payload as string
             })
     },

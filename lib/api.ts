@@ -16,18 +16,16 @@ export async function fetchClient(endpoint: string, options: FetchOptions = {}) 
         "Content-Type": "application/json",
     };
 
-    // Add authorization token if available
-    const token = localStorage.getItem("access_token");
-    if (token) {
-        defaultHeaders["Authorization"] = `Bearer ${token}`;
-    }
+    // Cookies are automatically sent with credentials: 'include'
+    // No need to manually add Authorization header
 
-    const config = {
+    const config: RequestInit = {
         ...rest,
         headers: {
             ...defaultHeaders,
             ...headers,
         },
+        credentials: 'include', // Include cookies in all requests
     };
 
     try {
@@ -46,8 +44,16 @@ export async function fetchClient(endpoint: string, options: FetchOptions = {}) 
 
             // Handle 401 Unauthorized globally
             if (response.status === 401) {
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("refresh_token");
+                // Call logout endpoint to clear cookies
+                try {
+                    await fetch(`${API_BASE_URL}/logout`, {
+                        method: 'POST',
+                        credentials: 'include',
+                    });
+                } catch (e) {
+                    // Ignore logout errors
+                }
+                
                 if (typeof window !== "undefined") {
                     window.location.href = "/sign-in";
                 }
