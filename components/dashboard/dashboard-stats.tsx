@@ -6,7 +6,7 @@ interface DashboardStatsProps {
   totalQuizzes: number
   completedQuizzes: number
   averageScore: number
-  rank: number
+  rank: number | string
 }
 
 export function DashboardStats({
