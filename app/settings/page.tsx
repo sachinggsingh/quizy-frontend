@@ -6,19 +6,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Settings2FA } from "@/components/setting-2fa"
 import { SettingsCompany } from "@/components/setting-company"
-import { Bell, Lock, Shield, Building2, FileText, Eye } from "lucide-react"
+import { Bell, Lock, Shield, Building2, FileText, Eye, CreditCard } from "lucide-react"
+import { SubscriptionCard } from "@/components/subscription-card"
+import { PlanBadge, type PlanType } from "@/components/plan-badge"
+import { useDashboardData } from "@/lib/hooks/useDashboardData"
 
-type SettingsTab = "security" | "notifications" | "privacy" | "company"
+type SettingsTab = "security" | "notifications" | "privacy" | "company" | "billings"
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("security")
 
   const settingsTabs = [
+    { id: "billings" as const, label: "Billings", icon: CreditCard },
     { id: "security" as const, label: "Security & 2FA", icon: Shield },
     { id: "notifications" as const, label: "Notifications", icon: Bell },
     { id: "privacy" as const, label: "Privacy", icon: Eye },
     { id: "company" as const, label: "Company Info", icon: Building2 },
   ]
+
+  const {
+    subscriptionLoaded,
+    isSubscribed,
+    planType,
+    planRaw,
+    subscription,
+  } = useDashboardData()
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,6 +143,30 @@ export default function SettingsPage() {
 
           {/* Company Info Tab */}
           {activeTab === "company" && <SettingsCompany />}
+
+          {/* Billings Tab */}
+          {activeTab === "billings" && (
+            <div className="space-y-6">
+              <section className="mb-6">
+                {!subscriptionLoaded ? (
+                  <div className="h-24 rounded-xl border border-border bg-card/50 animate-pulse" aria-hidden />
+                ) : isSubscribed ? (
+                  <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm">
+                    <PlanBadge plan={planType as PlanType} size="lg" showLabel={true} className="text-base" />
+                    <p className="text-muted-foreground text-sm">
+                      You&apos;re on the {planRaw === "enterprise" ? "Enterprise" : "Pro"} plan. Thanks for subscribing!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-card/30 border border-border/20 p-6 rounded-xl">
+                    <h2 className="text-2xl font-bold text-foreground mb-4">Subscription Plan</h2>
+                    <p className="text-muted-foreground mb-6">Choose a plan that fits your needs</p>
+                    <SubscriptionCard currentPlan={subscription?.plan || "free"} isSubscribed={false} />
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
         </div>
       </main>
     </div>

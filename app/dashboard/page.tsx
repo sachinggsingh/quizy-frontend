@@ -2,12 +2,9 @@
 
 import { QuizCard } from "@/components/quiz-card"
 import { StatsCard } from "@/components/stats-card"
-import { SubscriptionCard } from "@/components/subscription-card"
-import { PlanBadge } from "@/components/plan-badge"
 import { useDashboardData } from "@/lib/hooks/useDashboardData"
 import { LoaderThree, LoaderFive } from "@/components/ui/loader"
 import { Button } from "@/components/ui/button"
-import type { PlanType } from "@/components/plan-badge"
 
 export default function DashboardPage() {
   const {
@@ -15,11 +12,6 @@ export default function DashboardPage() {
     completedQuizzes,
     averageScore,
     rank,
-    subscriptionLoaded,
-    isSubscribed,
-    planType,
-    planRaw,
-    subscription,
     filter,
     setFilter,
     filteredQuizzes,
@@ -41,23 +33,6 @@ export default function DashboardPage() {
           <StatsCard label="Global Rank" value={`#${rank}`} subtext="Your position globally" />
         </div>
 
-        <section className="mb-12">
-          {!subscriptionLoaded ? (
-            <div className="h-24 rounded-xl border border-border bg-card/50 animate-pulse" aria-hidden />
-          ) : isSubscribed ? (
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm">
-              <PlanBadge plan={planType as PlanType} size="lg" showLabel={true} className="text-base" />
-              <p className="text-muted-foreground text-sm">
-                You&apos;re on the {planRaw === "enterprise" ? "Enterprise" : "Pro"} plan. Thanks for subscribing!
-              </p>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-2xl font-bold text-foreground mb-4">Subscription Plan</h2>
-              <SubscriptionCard currentPlan={subscription?.plan || "free"} isSubscribed={false} />
-            </>
-          )}
-        </section>
 
         <div>
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">

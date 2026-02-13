@@ -1,9 +1,7 @@
-"use client"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { createCheckoutSession } from "@/lib/api/subscription"
-import { Loader2 } from "lucide-react"
+import { Loader2, CheckCircle2, Star, Rocket, ShieldCheck } from "lucide-react"
 
 interface SubscriptionCardProps {
   currentPlan?: string
@@ -26,63 +24,104 @@ export function SubscriptionCard({ currentPlan, isSubscribed }: SubscriptionCard
       }
     } catch (error) {
       console.error("Subscription error:", error)
-      // Ideally show toast here
     } finally {
       setLoading(null)
     }
   }
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      {/* Pro Plan */}
-      <div className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-xl font-bold">Pro</h3>
-            <p className="text-muted-foreground text-sm">Unlock advanced features</p>
-          </div>
-          <span className="text-2xl font-bold">$9.99<span className="text-sm font-normal text-muted-foreground">/mo</span></span>
-        </div>
-        <ul className="space-y-2 mb-6 text-sm">
-            <li className="flex items-center gap-2">✓ Unlimited Quizzes</li>
-            <li className="flex items-center gap-2">✓ Advanced Analytics</li>
-            <li className="flex items-center gap-2">✓ Priority Support</li>
-        </ul>
-        <Button 
-          className="w-full cursor-pointer" 
-          variant={isSubscribed && currentPlan === "pro" ? "outline" : "default"}
-          disabled={isSubscribed || loading === "pro"}
-          onClick={() => handleSubscribe("pro")}
-        >
-          {loading === "pro" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubscribed && currentPlan === "pro" ? "Current Plan" : "Subscribe to Pro"}
-        </Button>
-      </div>
+  const plans = [
+    {
+      id: "free",
+      name: "Free",
+      price: "$0",
+      description: "Basic features for individuals",
+      features: ["5 Quizzes per month", "Basic Analytics", "Community Support", "Public Profile"],
+      icon: ShieldCheck,
+      color: "border-border",
+      highlight: false,
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: "$9.99",
+      description: "Unlock advanced features",
+      features: ["Unlimited Quizzes", "Advanced Analytics", "Priority Support", "Detailed Rank Stats"],
+      icon: Star,
+      color: "border-primary/50 shadow-lg shadow-primary/10",
+      highlight: true,
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      price: "$29.99",
+      description: "For power users & teams",
+      features: ["Everything in Pro", "Custom Branding", "API Access", "Dedicated Support"],
+      icon: Rocket,
+      color: "border-accent/50 bg-accent/5",
+      highlight: false,
+    }
+  ]
 
-      {/* Enterprise Plan */}
-      <div className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow bg-primary/5 border-primary/20">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-xl font-bold">Enterprise</h3>
-            <p className="text-muted-foreground text-sm">For power users</p>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-full">
+      {plans.map((plan) => {
+        const Icon = plan.icon
+        const isCurrent = isSubscribed && currentPlan === plan.id
+        const isActive = plan.id !== "free"
+
+        return (
+          <div 
+            key={plan.id}
+            className={`relative flex flex-col p-6 rounded-2xl border transition-all duration-300 hover:scale-[1.02] ${plan.color} bg-card/50 backdrop-blur-sm`}
+          >
+            {plan.highlight && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-accent text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                Most Popular
+              </div>
+            )}
+            
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-lg ${plan.highlight ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">{plan.name}</h3>
+                <p className="text-xs text-muted-foreground">{plan.description}</p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+              <span className="text-sm font-medium text-muted-foreground ml-1">/month</span>
+            </div>
+
+            <ul className="space-y-3 mb-8 flex-1">
+              {plan.features.map((feature, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-sm text-foreground/80">
+                  <CheckCircle2 className={`w-4 h-4 mt-0.5 shrink-0 ${plan.highlight ? "text-primary" : "text-muted-foreground"}`} />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Button
+              className={`w-full h-11 rounded-xl font-semibold transition-all duration-300 ${
+                isCurrent 
+                  ? "bg-transparent border-2 border-primary/50 text-primary hover:bg-primary/10" 
+                  : plan.highlight
+                    ? "bg-primary text-white hover:bg-primary/90 shadow-md shadow-primary/20"
+                    : "bg-card border border-border text-foreground hover:bg-accent/10"
+              }`}
+              variant={isCurrent ? "outline" : "default"}
+              disabled={(isSubscribed && plan.id === "free") || (isActive && loading === plan.id) || (isCurrent)}
+              onClick={() => plan.id !== "free" && handleSubscribe(plan.id as "pro" | "enterprise")}
+            >
+              {loading === plan.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isCurrent ? "Current Plan" : plan.id === "free" ? "Default Plan" : `Upgrade to ${plan.name}`}
+            </Button>
           </div>
-          <span className="text-2xl font-bold">$29.99<span className="text-sm font-normal text-muted-foreground">/mo</span></span>
-        </div>
-         <ul className="space-y-2 mb-6 text-sm">
-            <li className="flex items-center gap-2">✓ Everything in Pro</li>
-            <li className="flex items-center gap-2">✓ Custom Branding</li>
-            <li className="flex items-center gap-2">✓ API Access</li>
-        </ul>
-        <Button 
-          className="w-full cursor-pointer" 
-           variant={isSubscribed && currentPlan === "enterprise" ? "outline" : "default"}
-           disabled={isSubscribed || loading === "enterprise"}
-           onClick={() => handleSubscribe("enterprise")}
-        >
-          {loading === "enterprise" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubscribed && currentPlan === "enterprise" ? "Current Plan" : "Subscribe to Enterprise"}
-        </Button>
-      </div>
+        )
+      })}
     </div>
   )
 }
