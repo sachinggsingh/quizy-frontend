@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
-import { fetchQuizzes } from "@/lib/features/quiz/quizSlice"
+import { fetchQuizzes, fetchQuizzesByCategories } from "@/lib/features/quiz/quizSlice"
 import { fetchProfile } from "@/lib/features/auth/authSlice"
 import { getSubscription } from "@/lib/api/subscription"
 
@@ -10,7 +10,7 @@ const MIN_LOADER_MS = 1500
 
 export function useDashboardData() {
   const dispatch = useAppDispatch()
-  const { quizzes, isLoading, error } = useAppSelector((state) => state.quiz)
+  const { quizzes, categorizedQuizzes, isLoading, error } = useAppSelector((state) => state.quiz)
   const { user, isAuthenticated } = useAppSelector((state) => state.auth)
 
   const [showMinLoader, setShowMinLoader] = useState(true)
@@ -20,7 +20,7 @@ export function useDashboardData() {
   const [filter, setFilter] = useState<"new" | "attempted">("new")
 
   useEffect(() => {
-    dispatch(fetchQuizzes())
+    dispatch(fetchQuizzesByCategories())
     dispatch(fetchProfile())
     getSubscription()
       .then((sub) => {
@@ -134,6 +134,7 @@ export function useDashboardData() {
     filter,
     setFilter,
     filteredQuizzes,
+    categorizedQuizzes,
     effectivelyLoading,
     isLoading,
     error,

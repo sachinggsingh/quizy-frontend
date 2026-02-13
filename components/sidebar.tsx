@@ -13,7 +13,9 @@ import {
   ChevronRight,
   Menu,
   X,
-  Settings
+  Settings,
+  BookOpen,
+  Brain
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAppDispatch } from "@/lib/hooks"
@@ -61,7 +63,8 @@ export function Sidebar() {
   }
 
   const navItems = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    {label: "Dashboard", href: "/dashboard",icon: LayoutDashboard},
+    { label: "Quizzes", href: "/quiz", icon: Brain },
     { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Discussion", href: "/discussion", icon: MessageSquare },
@@ -114,42 +117,45 @@ export function Sidebar() {
 
         {/* Navigation Section */}
         <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto no-scrollbar">
-          <TooltipProvider delayDuration={0}>
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const isActive = pathname === item.href
-              return (
-                <Tooltip key={item.href}>
-                  <TooltipTrigger asChild>
-                    <Link 
-                      href={item.href}
-                      onClick={() => setIsMobileOpen(false)}
-                      className={cn(
-                        "flex items-center rounded-xl transition-all duration-200 group relative",
-                        isCollapsed ? "justify-center px-0 py-3" : "gap-3 px-3 py-2.5",
-                        isActive 
-                          ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                      )}
-                    >
-                      <Icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "" : "group-hover:scale-110 transition-transform")} />
-                      {!isCollapsed && (
-                        <span className="font-medium">{item.label}</span>
-                      )}
-                      {isActive && !isCollapsed && (
-                        <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary-foreground" />
-                      )}
-                    </Link>
-                  </TooltipTrigger>
-                  {isCollapsed && (
-                    <TooltipContent side="right" sideOffset={10}>
-                      {item.label}
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              )
-            })}
-          </TooltipProvider>
+      <TooltipProvider delayDuration={0}>
+        <div className="space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
+            return (
+              <Tooltip key={item.label}>
+                <TooltipTrigger asChild>
+                  <Link 
+                    href={item.href}
+                    onClick={() => setIsMobileOpen(false)}
+                    className={cn(
+                      "flex items-center rounded-xl transition-all duration-200 group relative",
+                      isCollapsed ? "justify-center px-0 py-3" : "gap-3 px-3 py-2.5",
+                      isActive 
+                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    )}
+                  >
+                    <Icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "" : "group-hover:scale-110 transition-transform")} />
+                    {!isCollapsed && (
+                      <span className="font-medium">{item.label}</span>
+                    )}
+                    {isActive && !isCollapsed && (
+                      <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary-foreground" />
+                    )}
+                  </Link>
+                </TooltipTrigger>
+                {isCollapsed && (
+                  <TooltipContent side="right" sideOffset={10}>
+                    {item.label}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            )
+          })}
+        </div>
+
+      </TooltipProvider>
         </nav>
 
         {/* Footer Section */}

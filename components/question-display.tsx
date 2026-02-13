@@ -20,7 +20,7 @@ export function QuestionDisplay({ questionNumber, totalQuestions, question, cate
             </span>
           </div>
         )}
-        <CardTitle className="text-2xl leading-relaxed text-balance bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+        <CardTitle className="text-2xl leading-relaxed text-balance text-foreground font-bold">
           {question}
         </CardTitle>
       </CardHeader>
