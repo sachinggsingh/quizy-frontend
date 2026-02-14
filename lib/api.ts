@@ -8,6 +8,11 @@ type FetchOptions = RequestInit & {
     headers?: Record<string, string>;
 };
 
+async function doFetch(url: string, config: RequestInit): Promise<Response> {
+    const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+    return fetch(fullUrl, config);
+}
+
 export async function fetchClient(endpoint: string, options: FetchOptions = {}) {
     const { headers, ...rest } = options;
 
@@ -17,43 +22,48 @@ export async function fetchClient(endpoint: string, options: FetchOptions = {}) 
     };
 
     // Cookies are automatically sent with credentials: 'include'
-    // No need to manually add Authorization header
-
     const config: RequestInit = {
         ...rest,
         headers: {
             ...defaultHeaders,
             ...headers,
         },
-        credentials: 'include', // Include cookies in all requests
+        credentials: 'include',
     };
 
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        let response = await doFetch(endpoint, config);
+
+        // On 401, try to refresh token and retry once
+        if (response.status === 401) {
+            const refreshRes = await doFetch("/refresh-token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+            });
+            if (refreshRes.ok) {
+                response = await doFetch(endpoint, config);
+            }
+        }
 
         if (!response.ok) {
             let errorMessage = "Something went wrong";
             try {
-                // Clone response to allow reading body twice if needed
                 const errorData = await response.clone().json();
                 errorMessage = errorData.message || errorData.error || errorMessage;
             } catch (e) {
-                // If not JSON, try text
-                errorMessage = await response.text() || errorMessage;
+                errorMessage = (await response.text()) || errorMessage;
             }
 
-            // Handle 401 Unauthorized globally
             if (response.status === 401) {
-                // Call logout endpoint to clear cookies
                 try {
-                    await fetch(`${API_BASE_URL}/logout`, {
-                        method: 'POST',
-                        credentials: 'include',
+                    await doFetch("/logout", {
+                        method: "POST",
+                        credentials: "include",
                     });
                 } catch (e) {
-                    // Ignore logout errors
+                    // ignore
                 }
-                
                 if (typeof window !== "undefined") {
                     window.location.href = "/sign-in";
                 }

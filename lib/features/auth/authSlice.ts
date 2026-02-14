@@ -6,15 +6,17 @@ interface AuthState {
     token: string | null
     isAuthenticated: boolean
     isLoading: boolean
+    authCheckDone: boolean // true after first fetchProfile attempt (so we don't redirect before trying cookies)
     error: string | null
 }
 
 // Initial state - cookies are handled automatically by the browser
 const initialState: AuthState = {
     user: null,
-    token: null, // Tokens are now stored in cookies, not localStorage
-    isAuthenticated: false, // Will be set after successful login or profile fetch
+    token: null,
+    isAuthenticated: false,
     isLoading: false,
+    authCheckDone: false,
     error: null,
 }
 
@@ -160,7 +162,8 @@ const authSlice = createSlice({
             })
             .addCase(fetchProfile.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.isAuthenticated = true // User is authenticated if profile fetch succeeds
+                state.authCheckDone = true
+                state.isAuthenticated = true
                 const p = action.payload as any
                 const completedIds = p?.completed_quiz_ids ?? p?.completedQuizIds ?? []
                 state.user = {
@@ -172,9 +175,7 @@ const authSlice = createSlice({
             })
             .addCase(fetchProfile.rejected, (state, action) => {
                 state.isLoading = false
-                // Don't set isAuthenticated to false if profile fetch fails
-                // Cookies might still be valid, just profile fetch failed
-                // User will be redirected to sign-in on next 401 error
+                state.authCheckDone = true
                 state.error = action.payload as string
             })
     },

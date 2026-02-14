@@ -47,20 +47,25 @@ export function useLeaderboardWs() {
                   ? message
                   : []
             if (users.length > 0) {
-              const mapped: LeaderboardRow[] = users.map((u: any, index: number) => ({
-                rank: index + 1,
-                name: u.name ?? "?",
-                avatar: (u.name ?? "?")
-                  .split(" ")
-                  .map((n: string) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2) || "?",
-                score: u.score ?? 0,
-                quizzesCompleted: u.completed_quizzes ?? u.completedQuizzes ?? 0,
-                averageScore: Math.round(u.average_score ?? u.averageScore ?? 0),
-                isCurrentUser: u.id === currentUser?.id,
-              }))
+              const mapped: LeaderboardRow[] = users.map((u: any, index: number) => {
+                const score = Number(u.score ?? u.points ?? u.total_score ?? 0)
+                const quizIds = u.completed_quiz_ids ?? u.completedQuizIds
+                const quizzesCompleted = typeof u.completed_quizzes === "number" ? u.completed_quizzes : (Array.isArray(quizIds) ? quizIds.length : 0)
+                return {
+                  rank: index + 1,
+                  name: String(u.name ?? "?"),
+                  avatar: (String(u.name ?? "?"))
+                    .split(" ")
+                    .map((n: string) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2) || "?",
+                  score: Number.isFinite(score) ? score : 0,
+                  quizzesCompleted: Number.isFinite(quizzesCompleted) ? quizzesCompleted : 0,
+                  averageScore: Math.round(Number(u.average_score ?? u.averageScore ?? 0) || 0),
+                  isCurrentUser: String(u.id ?? u._id ?? "") === String(currentUser?.id ?? ""),
+                }
+              })
               setLeaderboardData(mapped)
             }
           } catch {
@@ -93,7 +98,9 @@ export function useLeaderboardWs() {
 
   const userStats = leaderboardData.find((u) => u.isCurrentUser) ?? {
     rank: (currentUser as any)?.rank ?? "-",
-    score: (currentUser as any)?.score ?? 0,
+    score: Number((currentUser as any)?.score ?? (currentUser as any)?.total_score ?? 0) || 0,
+    quizzesCompleted: (currentUser as any)?.completedQuizzes ?? 0,
+    averageScore: Math.round(Number((currentUser as any)?.averageScore ?? (currentUser as any)?.average_score ?? 0) || 0),
   }
 
   return { leaderboardData, userStats, currentUser }

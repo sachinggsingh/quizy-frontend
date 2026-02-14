@@ -12,13 +12,14 @@ export interface UseLeaderboardReturn {
   userStats: { rank: number; score: number }
   currentUser: any
   isAuthenticated: boolean
+  authCheckDone: boolean
   mounted: boolean
 }
 
 export function useLeaderboard(): UseLeaderboardReturn {
   const [timeframe, setTimeframe] = useState<Timeframe>("all-time")
   const [mounted, setMounted] = useState(false)
-  const { isAuthenticated } = useAppSelector((state) => state.auth)
+  const { isAuthenticated, authCheckDone } = useAppSelector((state) => state.auth)
   const { leaderboardData, userStats, currentUser } = useLeaderboardWs()
   const router = useRouter()
 
@@ -26,11 +27,12 @@ export function useLeaderboard(): UseLeaderboardReturn {
     setMounted(true)
   }, [])
 
+  // Only redirect after we've tried to restore session from cookies (authCheckDone)
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
+    if (mounted && authCheckDone && !isAuthenticated) {
       router.push("/sign-in")
     }
-  }, [mounted, isAuthenticated, router])
+  }, [mounted, authCheckDone, isAuthenticated, router])
 
   return {
     timeframe,
@@ -39,6 +41,7 @@ export function useLeaderboard(): UseLeaderboardReturn {
     userStats,
     currentUser,
     isAuthenticated,
+    authCheckDone,
     mounted,
   }
 }

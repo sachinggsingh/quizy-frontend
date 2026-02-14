@@ -18,9 +18,13 @@ export default function LeaderboardPage() {
     currentUser,
     mounted,
     isAuthenticated,
+    authCheckDone,
   } = useLeaderboard()
 
-  if (!mounted || !isAuthenticated) {
+  if (!mounted || !authCheckDone) {
+    return null
+  }
+  if (!isAuthenticated) {
     return null
   }
 

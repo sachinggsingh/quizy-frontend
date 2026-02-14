@@ -73,10 +73,12 @@ export function LeaderboardTable({ data, timeframe }: LeaderboardTableProps) {
                     </div>
                   </td>
                   <td className="py-4 pr-4 text-right">
-                    <span className="font-bold text-lg text-primary">{user.score.toLocaleString()}</span>
+                    <span className="font-bold text-lg text-foreground" data-score>
+                      {(Number(user.score) ?? 0).toLocaleString()}
+                    </span>
                   </td>
                   <td className="py-4 pr-4 text-right text-foreground">{user.quizzesCompleted}</td>
-                  <td className="py-4 text-right font-semibold text-foreground">{user.averageScore}%</td>
+                  <td className="py-4 text-right font-semibold text-foreground">{Number(user.averageScore) || 0}%</td>
                 </tr>
               ))}
             </tbody>
