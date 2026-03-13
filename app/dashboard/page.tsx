@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { useDashboardData } from "@/lib/hooks/useDashboardData"
 import { LoaderThree, LoaderFive } from "@/components/ui/loader"
 import {
@@ -8,6 +8,7 @@ import {
   DashboardStats,
   DashboardCategories,
 } from "@/components/dashboard"
+import { CreateRoomCard } from "@/components/rooms/create-room-card"
 
 function DashboardContent() {
   const {
@@ -18,12 +19,22 @@ function DashboardContent() {
     effectivelyLoading,
     filteredQuizzes,
     error,
+    isSubscribed,
   } = useDashboardData()
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <DashboardHeader />
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
+          <div className="flex-1">
+            <DashboardHeader />
+          </div>
+          {isSubscribed && (
+            <div className="w-full md:w-80 flex-shrink-0">
+              <CreateRoomCard />
+            </div>
+          )}
+        </div>
 
         <DashboardStats
           totalQuizzes={filteredQuizzes.length || 0}
