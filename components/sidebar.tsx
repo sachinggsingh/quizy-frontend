@@ -15,7 +15,8 @@ import {
   X,
   Settings,
   BookOpen,
-  Brain
+  Brain,
+  Users
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAppDispatch } from "@/lib/hooks"
@@ -69,6 +70,7 @@ export function Sidebar() {
     { label: "Profile", href: "/profile", icon: User },
     { label: "Discussion", href: "/discussion", icon: MessageSquare },
     { label: "Settings", href: "/settings", icon: Settings },
+    { label: "Room", href: "/room", icon: Users },
   ]
 
   return (

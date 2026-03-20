@@ -9,6 +9,7 @@ import {
   DashboardCategories,
 } from "@/components/dashboard"
 import { CreateRoomCard } from "@/components/rooms/create-room-card"
+import { JoinRoomCard } from "@/components/rooms/join-room-card"
 
 function DashboardContent() {
   const {
@@ -24,16 +25,15 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-4">
           <div className="flex-1">
             <DashboardHeader />
           </div>
-          {isSubscribed && (
-            <div className="w-full md:w-80 flex-shrink-0">
-              <CreateRoomCard />
-            </div>
-          )}
+          {/* <div className="w-full md:w-80 flex-shrink-0 space-y-4"> */}
+            {/* {isSubscribed && <CreateRoomCard />} */}
+            {/* <JoinRoomCard /> */}
+          {/* </div> */}
         </div>
 
         <DashboardStats
