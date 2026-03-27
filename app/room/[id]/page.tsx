@@ -32,6 +32,7 @@ export default function RoomPage() {
   const [error, setError] = useState<string | null>(null)
   const [hostId, setHostId] = useState<string | null>(null)
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null)
+  const [isPublishing, setIsPublishing] = useState(false)
   const [isQuizStarted, setIsQuizStarted] = useState(false)
   const [participantScores, setParticipantScores] = useState<{ userId: string; score: number }[]>([])
   const [participantCount, setParticipantCount] = useState(0)
@@ -214,42 +215,71 @@ export default function RoomPage() {
             {/* Main Content Area */}
             <div className="space-y-8">
                 {isHost ? (
-                    <div className="space-y-8">
-                        <QuizForm onPublish={(quizData) => {
-                            if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-                                socketRef.current.send(JSON.stringify({
-                                    type: "START_QUIZ",
-                                    data: quizData,
-                                    room_id: roomId
-                                }))
-                                setActiveQuiz(quizData)
-                            }
-                        }} />
-                        
-                        {participantScores.length > 0 && (
-                            <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4">
-                                <CardHeader className="border-b border-border/50 py-4">
-                                    <CardTitle className="text-lg font-bold flex items-center gap-2">
-                                        <Trophy className="h-5 w-5 text-primary" />
-                                        Leaderboard
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <div className="space-y-3">
-                                        {participantScores.sort((a,b) => b.score - a.score).map((p, idx) => (
-                                            <div key={idx} className="flex items-center justify-between p-3 bg-muted/20 rounded-xl border border-border/50">
-                                                <div className="flex items-center gap-4">
-                                                    <span className="font-mono text-muted-foreground">#{(idx + 1).toString().padStart(2, '0')}</span>
-                                                    <span className="font-bold">{p.userId}</span>
-                                                </div>
-                                                <span className="text-lg font-black text-primary">{p.score} pts</span>
-                                            </div>
-                                        ))}
+                    !activeQuiz ? (
+                        <div className="space-y-8">
+                            <QuizForm onPublish={(quizData) => {
+                                if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                                    socketRef.current.send(JSON.stringify({
+                                        type: "START_QUIZ",
+                                        data: quizData,
+                                        room_id: roomId
+                                    }))
+                                    setActiveQuiz(quizData)
+                                    setIsPublishing(true)
+                                    setTimeout(() => {
+                                        setIsPublishing(false)
+                                    }, 2000)
+                                }
+                            }} />
+                        </div>
+                    ) : (
+                        <div className="space-y-8">
+                            {isPublishing ? (
+                                <Card className="border-border/50 bg-card/50 backdrop-blur-sm p-12 text-center shadow-sm">
+                                    <div className="flex flex-col items-center justify-center space-y-4">
+                                        <LoaderFive text="Publishing quiz..." />
+                                        <p className="text-muted-foreground font-medium">Preparing the leaderboard...</p>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
+                                </Card>
+                            ) : (
+                                <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+                                    <CardHeader className="border-b border-border/50 py-4 flex flex-row items-center justify-between">
+                                        <CardTitle className="text-lg font-bold flex items-center gap-2">
+                                            <Trophy className="h-5 w-5 text-primary" />
+                                            Leaderboard
+                                        </CardTitle>
+                                        <Badge variant="outline" className="bg-primary/5">
+                                            {participantScores.length} Participants Completed
+                                        </Badge>
+                                    </CardHeader>
+                                    <CardContent className="p-4">
+                                        {participantScores.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {participantScores.sort((a,b) => b.score - a.score).map((p, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between p-3 bg-muted/20 rounded-xl border border-border/50">
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="font-mono text-muted-foreground">#{(idx + 1).toString().padStart(2, '0')}</span>
+                                                            <span className="font-bold">{p.userId}</span>
+                                                        </div>
+                                                        <span className="text-lg font-black text-primary">{p.score} pts</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center p-8 text-center space-y-3">
+                                                <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
+                                                    <Trophy className="h-6 w-6 text-muted-foreground" />
+                                                </div>
+                                                <p className="text-muted-foreground font-medium text-sm">
+                                                    Waiting for participants to complete the quiz...
+                                                </p>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
+                    )
                 ) : (
                     isQuizStarted ? (
                         <ParticipantQuiz 
